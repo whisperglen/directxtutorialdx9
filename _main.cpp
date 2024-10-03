@@ -10,6 +10,8 @@
 
 #include <tchar.h>
 
+#include "helper.h"
+
 #define WNDCLASS_NAME	TEXT("DXTut9WCls")
 #define WINDOW_NAME		TEXT("directxtutorialdx9")
 #define WINDOW_STYLE	WS_OVERLAPPEDWINDOW //non-fullscreen
@@ -18,10 +20,6 @@
 #define WINDOW_XPOS		200
 #define WINDOW_YPOS		200
 
-// define the screen resolution
-#define SCREEN_WIDTH  800
-#define SCREEN_HEIGHT 600
-
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND hWnd,
 	UINT message,
@@ -29,13 +27,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd,
 	LPARAM lParam);
 
 extern int run_tests();
+extern int call_loop_unit1(int& selection, LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device);
 
-// global declarations
-LPDIRECT3D9 d3d;    // the pointer to our Direct3D interface
-LPDIRECT3DDEVICE9 d3ddev;    // the pointer to the device class
+static int selection = INT_MAX;
+
 
 // this function initializes and prepares Direct3D for use
-void initD3D(HWND hWnd)
+void initD3D(HWND hWnd, LPDIRECT3D9& d3d, LPDIRECT3DDEVICE9& device)
 {
 	d3d = Direct3DCreate9(D3D_SDK_VERSION);    // create the Direct3D interface
 
@@ -55,28 +53,13 @@ void initD3D(HWND hWnd)
 		hWnd,
 		D3DCREATE_SOFTWARE_VERTEXPROCESSING,
 		&d3dpp,
-		&d3ddev);
-}
-
-// this is the function used to render a single frame
-void render_frame(void)
-{
-	// clear the window to a deep blue
-	d3ddev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 40, 100), 1.0f, 0);
-
-	d3ddev->BeginScene();    // begins the 3D scene
-
-	// do 3D rendering on the back buffer here
-
-	d3ddev->EndScene();    // ends the 3D scene
-
-	d3ddev->Present(NULL, NULL, NULL, NULL);    // displays the created frame
+		&device);
 }
 
 // this is the function that cleans up Direct3D and COM
-void cleanD3D(void)
+void cleanD3D(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 {
-	d3ddev->Release();    // close and release the 3D device
+	device->Release();    // close and release the 3D device
 	d3d->Release();    // close and release Direct3D
 }
 
@@ -133,13 +116,17 @@ int main()
 	// display the window on the screen
 	ShowWindow(hWnd, nCmdShow);
 
-	initD3D(hWnd);
-	// enter the main loop:
 
 	{
+		LPDIRECT3D9 d3d;    // the pointer to our Direct3D interface
+		LPDIRECT3DDEVICE9 d3ddev;    // the pointer to the device class
+
+		initD3D(hWnd, d3d, d3ddev);
+
+		// enter the main loop:
 		// this struct holds Windows event messages
 		MSG msg;
-		bool wmquit_emitted = false;
+		bool end_msg_loop = false;
 
 		//// wait for the next message in the queue, store the result in 'msg'
 		//while (GetMessage(&msg, NULL, 0, 0))
@@ -160,7 +147,7 @@ int main()
 				// wndproc posted WM_QUIT, exit now
 				if (msg.message == WM_QUIT)
 				{
-					wmquit_emitted = true;
+					end_msg_loop = true;
 					break;
 				}
 
@@ -170,13 +157,14 @@ int main()
 			}
 
 			// If the message is WM_QUIT, exit the while loop
-			if (wmquit_emitted)
+			if (end_msg_loop)
 				break;
 
 			// Run game code here
-			render_frame();
+			if(0 != call_loop_unit1(selection, d3d, d3ddev))
+				break;
 		}
-		cleanD3D();
+		cleanD3D(d3d, d3ddev);
 		DestroyWindow(hWnd);
 		DeleteObject(hWnd);
 
