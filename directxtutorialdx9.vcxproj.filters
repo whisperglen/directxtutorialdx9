@@ -36,6 +36,12 @@
     <ClCompile Include="1.Basics\triangle3d.cpp">
       <Filter>Source Files\Basics</Filter>
     </ClCompile>
+    <ClCompile Include="1.Basics\pyramid.cpp">
+      <Filter>Source Files\Basics</Filter>
+    </ClCompile>
+    <ClCompile Include="helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">

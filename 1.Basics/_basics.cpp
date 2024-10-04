@@ -6,11 +6,11 @@ int call_loop_unit1(int& selection, LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 {
 	int retcode = 0;
 
-	render_func fcn = first;
-	for (int i = 0; basics_ptrs[i] && i <= selection; i++)
-	{
-		fcn = basics_ptrs[i];
-	}
+	render_func fcn = select_render_func(basics_ptrs, selection);
+
+	device->SetRenderState(D3DRS_LIGHTING, FALSE);    // turn off the 3D lighting
+	device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	device->SetRenderState(D3DRS_ZENABLE, FALSE);    // turn on the z-buffer
 
 	retcode = fcn(d3d, device);
 

@@ -46,6 +46,8 @@ void initD3D(HWND hWnd, LPDIRECT3D9& d3d, LPDIRECT3DDEVICE9& device)
 	d3dpp.BackBufferFormat = D3DFMT_X8R8G8B8;    // set the back buffer format to 32-bit
 	d3dpp.BackBufferWidth = SCREEN_WIDTH;    // set the width of the buffer
 	d3dpp.BackBufferHeight = SCREEN_HEIGHT;    // set the height of the buffer
+	d3dpp.EnableAutoDepthStencil = TRUE;
+	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
 
 	// create a device class using this information and information from the d3dpp stuct
 	d3d->CreateDevice(D3DADAPTER_DEFAULT,
@@ -190,6 +192,12 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			{
 				PostQuitMessage(0);
 				return 0;
+			}
+		break;
+		case WM_KEYUP:
+			if (wParam == VK_TAB)
+			{
+				selection--;
 			}
 		break;
 		// this message is read when the window is closed

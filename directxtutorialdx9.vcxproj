@@ -163,9 +163,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="1.Basics\pyramid.cpp" />
     <ClCompile Include="1.Basics\triangle.cpp" />
     <ClCompile Include="1.Basics\triangle3d.cpp" />
     <ClCompile Include="1.Basics\_basics.cpp" />
+    <ClCompile Include="helper.cpp" />
     <ClCompile Include="tests.cpp" />
     <ClCompile Include="_main.cpp" />
   </ItemGroup>

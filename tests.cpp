@@ -5,6 +5,8 @@
 #include <iostream>
 //#include <cassert>
 
+#include "helper.h"
+
 using std::string;
 using std::cin;
 using std::cout;
@@ -81,9 +83,43 @@ static int test_selection()
 	return 0;
 }
 
+static int test_select_render_func()
+{
+	static render_func test_ptrs[] =
+	{
+		(render_func)1,
+		(render_func)2,
+		(render_func)3,
+		0
+	};
+
+	int selection;
+
+	selection = -1;
+	assertx((int)select_render_func(test_ptrs, selection) == 3);
+	assertx(selection == 2);
+	selection = 0;
+	assertx((int)select_render_func(test_ptrs, selection) == 1);
+	assertx(selection == 0);
+	selection = 1;
+	assertx((int)select_render_func(test_ptrs, selection) == 2);
+	assertx(selection == 1);
+	selection = 2;
+	assertx((int)select_render_func(test_ptrs, selection) == 3);
+	assertx(selection == 2);
+	selection = 3;
+	assertx((int)select_render_func(test_ptrs, selection) == 3);
+	assertx(selection == 2);
+	selection = 100;
+	assertx((int)select_render_func(test_ptrs, selection) == 3);
+	assertx(selection == 2);
+
+	return 0;
+}
+
 int run_tests()
 {
-	test_selection();
+	test_select_render_func();
 
 	cout << "Tests result: " << tests_ok << "/" << tests_total << endl;
 	return 0;

@@ -8,7 +8,7 @@ struct CUSTOMVERTEX
 };
 #define CUSTOMFVF (D3DFVF_XYZRHW | D3DFVF_DIFFUSE)
 
-LPDIRECT3DVERTEXBUFFER9 v_buffer;
+static LPDIRECT3DVERTEXBUFFER9 v_buffer;
 static int triangle_init_done = 0;
 static int triangle_do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 {
@@ -69,4 +69,6 @@ int triangle(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	device->EndScene();
 
 	device->Present(NULL, NULL, NULL, NULL);
+
+	return 0;
 }
