@@ -679,7 +679,7 @@ namespace normalsgen {
 		}
 		if (key.horiz && key.ctrl)
 		{
-			rotz += 0.2f * key.vert;
+			rotz += 0.2f * key.horiz;
 		}
 		if (key.vert && !key.ctrl)
 		{
