@@ -19,6 +19,9 @@
     <Filter Include="Header Files\Basics">
       <UniqueIdentifier>{999666d7-8e84-46e2-bac5-ad8876f8825e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\data">
+      <UniqueIdentifier>{6fae7283-de05-4cdc-a150-9d0da570b004}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_main.cpp">
@@ -42,10 +45,28 @@
     <ClCompile Include="helper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="1.Basics\vertexlight.cpp">
+      <Filter>Source Files\Basics</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\cube1.mtl">
+      <Filter>Resource Files\data</Filter>
+    </None>
+    <None Include="data\shapes.mtl">
+      <Filter>Resource Files\data</Filter>
+    </None>
+    <None Include="data\cube1.obj">
+      <Filter>Resource Files\data</Filter>
+    </None>
+    <None Include="data\shapes.obj">
+      <Filter>Resource Files\data</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

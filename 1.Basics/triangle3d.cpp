@@ -356,17 +356,20 @@ int triangledepth(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	device->SetStreamSource(0, v_buffer3, 0, sizeof(CUSTOMVERTEX));
 
 	D3DXMATRIX matTranslateA;    // a matrix to store the translation for triangle A
+	D3DXMATRIX matScaleA;
 	D3DXMATRIX matTranslateB;    // a matrix to store the translation for triangle B
 	D3DXMATRIX matRotateY;    // a matrix to store the rotation for each triangle
 	static float index = 0.0f; index += 0.05f; // an ever-increasing float value
 
 	// build MULTIPLE matrices to translate the model and one to rotate
-	D3DXMatrixTranslation(&matTranslateA, 0.0f, 0.0f, 2.0f);
+	D3DXMatrixTranslation(&matTranslateA, 2.0f, -2.0f, 2.0f);
+	D3DXMatrixScaling(&matScaleA, 0.5f, 0.5f, 0.5f);
 	D3DXMatrixTranslation(&matTranslateB, 0.0f, 0.0f, -2.0f);
+	D3DXMatrixIdentity(&matRotateY);
 	D3DXMatrixRotationY(&matRotateY, index);    // the front side
 
 	// tell Direct3D about each world transform, and then draw another triangle
-	device->SetTransform(D3DTS_WORLD, &(matTranslateA * matRotateY));
+	device->SetTransform(D3DTS_WORLD, &(matScaleA * matTranslateA * matRotateY));
 	device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
 
 	device->SetTransform(D3DTS_WORLD, &(matTranslateB * matRotateY));

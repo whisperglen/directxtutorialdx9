@@ -1,15 +1,6 @@
 // directxtutorialdx9.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-
-#include <iostream>
-// include the basic windows header file
-#include <windows.h>
-#include <windowsx.h>
-#include <d3d9.h>
-
-#include <tchar.h>
-
 #include "helper.h"
 
 #define WNDCLASS_NAME	TEXT("DXTut9WCls")
@@ -184,6 +175,9 @@ exit_main:
 // this is the main message handler for the program
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	static bool ctrl_pressed = false;
+	union inputs pressed = { 0 };
+
 	// sort through and find what code to run for the message given
 	switch (message)
 	{
@@ -193,11 +187,39 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 				PostQuitMessage(0);
 				return 0;
 			}
+			if (wParam == VK_CONTROL)
+			{
+				ctrl_pressed = true;
+			}
 		break;
 		case WM_KEYUP:
 			if (wParam == VK_TAB)
 			{
 				selection--;
+			}
+			if (wParam == VK_CONTROL)
+			{
+				ctrl_pressed = false;
+			}
+			if (wParam == VK_UP)
+			{
+				pressed.vert = 1;
+			}
+			if (wParam == VK_DOWN)
+			{
+				pressed.vert = -1;
+			}
+			if (wParam == VK_LEFT)
+			{
+				pressed.horiz = -1;
+			}
+			if (wParam == VK_RIGHT)
+			{
+				pressed.horiz = 1;
+			}
+			if (wParam == 'T')
+			{
+				pressed.t = 1;
 			}
 		break;
 		// this message is read when the window is closed
@@ -207,6 +229,12 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			return 0;
 		break;
 	}
+
+	if (ctrl_pressed)
+		pressed.ctrl = 1;
+
+	if (pressed.all != 0)
+		store_keypress(pressed);
 
 	// Handle any messages the switch statement didn't
 	return DefWindowProc(hWnd, message, wParam, lParam);
