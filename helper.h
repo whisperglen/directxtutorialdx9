@@ -12,15 +12,17 @@
 #include <time.h>
 #include <tchar.h>
 
+#include "DemoClass.h"
+
 typedef unsigned int uint;
 
 // define the screen resolution
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
 
-typedef int(*render_func)(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device);
 
-render_func select_render_func(render_func storage[], int& selection);
+extern Demo *last_demo;
+extern int last_selection;
 
 
 struct mesh_obj
@@ -42,7 +44,8 @@ union inputs
 		int horiz : 2;
 		int vert : 2;
 		int ctrl : 1;
-		int t : 1;
+		uint t : 1;
+		uint f : 1;
 	};
 	uint all;
 };

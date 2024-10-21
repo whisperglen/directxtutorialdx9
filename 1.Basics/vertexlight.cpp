@@ -83,12 +83,13 @@ static void create_cube(LPDIRECT3DDEVICE9 device, LPDIRECT3DVERTEXBUFFER9 &v_buf
 	i_buffer->Unlock();
 }
 
-namespace vertexlight {
-
-	static LPDIRECT3DVERTEXBUFFER9 v_buffer;
-	static LPDIRECT3DINDEXBUFFER9 i_buffer;
-	static int init_done = 0;
-	static int do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
+class VertexLight : public Demo
+{
+	LPDIRECT3DVERTEXBUFFER9 v_buffer;
+	LPDIRECT3DINDEXBUFFER9 i_buffer;
+public:
+	VertexLight() : Demo() {}
+	virtual int do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	{
 		create_cube(device, v_buffer, i_buffer);
 
@@ -111,21 +112,20 @@ namespace vertexlight {
 
 		device->SetMaterial(&material);    // set the globably-used material to &material
 
+		device->SetRenderState(D3DRS_LIGHTING, TRUE);    // turn on the 3D lighting
+		device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+		device->SetRenderState(D3DRS_ZENABLE, TRUE);    // turn on the z-buffer
+		//device->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(50, 50, 50));    // ambient light
+
 		init_done = 1;
 		return 0;
 	}
 
-	int loop(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
+	virtual int loop(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	{
-
 		if (init_done == 0)
 			if (0 != do_init(d3d, device))
 				return -1;
-
-		device->SetRenderState(D3DRS_LIGHTING, TRUE);    // turn on the 3D lighting
-		//device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-		device->SetRenderState(D3DRS_ZENABLE, TRUE);    // turn on the z-buffer
-		//device->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(50, 50, 50));    // ambient light
 
 		device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0x33, 0x4d, 0x4d), 1.0f, 0);
 		device->Clear(0, NULL, D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
@@ -137,7 +137,7 @@ namespace vertexlight {
 		{
 			light_enabled = !light_enabled;
 		}
-		
+
 		device->LightEnable(0, light_enabled);    // turn on light #0
 
 		static float scaling = 1.0f;
@@ -153,7 +153,7 @@ namespace vertexlight {
 		}
 		if (key.vert)
 		{
-			if(key.ctrl)
+			if (key.ctrl)
 				posz += 1.0f * key.vert;
 			else
 				posy += 1.0f * key.vert;
@@ -204,14 +204,20 @@ namespace vertexlight {
 
 		return 0;
 	}
+};
+
+Demo *factory_vertexlight_create()
+{
+	return new VertexLight();
 }
 
-namespace pointlight {
-
-	static LPDIRECT3DVERTEXBUFFER9 v_buffer;
-	static LPDIRECT3DINDEXBUFFER9 i_buffer;
-	static int init_done = 0;
-	static int do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
+class PointLight : public Demo
+{
+	LPDIRECT3DVERTEXBUFFER9 v_buffer;
+	LPDIRECT3DINDEXBUFFER9 i_buffer;
+public:
+	PointLight() : Demo() {}
+	virtual int do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	{
 		create_cube(device, v_buffer, i_buffer);
 
@@ -238,22 +244,21 @@ namespace pointlight {
 
 		device->SetMaterial(&material);    // set the globably-used material to &material
 
+		device->SetRenderState(D3DRS_LIGHTING, TRUE);    // turn on the 3D lighting
+		device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+		device->SetRenderState(D3DRS_ZENABLE, TRUE);    // turn on the z-buffer
+		device->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+		device->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(50, 50, 50));    // ambient light
+
 		init_done = 1;
 		return 0;
 	}
 
-	int loop(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
+	virtual int loop(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	{
-
 		if (init_done == 0)
 			if (0 != do_init(d3d, device))
 				return -1;
-
-		device->SetRenderState(D3DRS_LIGHTING, TRUE);    // turn on the 3D lighting
-		//device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-		device->SetRenderState(D3DRS_ZENABLE, TRUE);    // turn on the z-buffer
-		device->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
-		device->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(50, 50, 50));    // ambient light
 
 		device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0x33, 0x4d, 0x4d), 1.0f, 0);
 		device->Clear(0, NULL, D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
@@ -317,14 +322,20 @@ namespace pointlight {
 
 		return 0;
 	}
+};
+
+Demo *factory_pointlight_create()
+{
+	return new PointLight();
 }
 
-namespace spotlight {
-
-	static LPDIRECT3DVERTEXBUFFER9 v_buffer;
-	static LPDIRECT3DINDEXBUFFER9 i_buffer;
-	static int init_done = 0;
-	static int do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
+class SpotLight : public Demo
+{
+	LPDIRECT3DVERTEXBUFFER9 v_buffer;
+	LPDIRECT3DINDEXBUFFER9 i_buffer;
+public:
+	SpotLight() : Demo() {}
+	virtual int do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	{
 		create_cube(device, v_buffer, i_buffer);
 
@@ -355,22 +366,21 @@ namespace spotlight {
 
 		device->SetMaterial(&material);    // set the globably-used material to &material
 
+		device->SetRenderState(D3DRS_LIGHTING, TRUE);    // turn on the 3D lighting
+		device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+		device->SetRenderState(D3DRS_ZENABLE, TRUE);    // turn on the z-buffer
+		device->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+		device->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(50, 50, 50));    // ambient light
+
 		init_done = 1;
 		return 0;
 	}
 
-	int loop(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
+	virtual int loop(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	{
-
 		if (init_done == 0)
 			if (0 != do_init(d3d, device))
 				return -1;
-
-		device->SetRenderState(D3DRS_LIGHTING, TRUE);    // turn on the 3D lighting
-		//device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-		device->SetRenderState(D3DRS_ZENABLE, TRUE);    // turn on the z-buffer
-		device->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
-		device->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(50, 50, 50));    // ambient light
 
 		device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0x33, 0x4d, 0x4d), 1.0f, 0);
 		device->Clear(0, NULL, D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
@@ -433,13 +443,19 @@ namespace spotlight {
 
 		return 0;
 	}
+};
+
+Demo *factory_spotlight_create()
+{
+	return new SpotLight();
 }
 
-namespace lightbox {
-
-	static struct mesh_obj objects[5];
-	static int init_done = 0;
-	static int do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
+class LightBox : public Demo
+{
+	struct mesh_obj objects[5];
+public:
+	LightBox() : Demo() {};
+	virtual int do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	{
 		load_mesh("shapes.obj", "Object.1", device, objects[0]);
 		load_mesh("shapes.obj", "Object.2", device, objects[1]);
@@ -470,22 +486,21 @@ namespace lightbox {
 		device->SetLight(0, &light);    // send the light struct properties to light #0
 		device->LightEnable(0, TRUE);    // turn on light #0
 
+		device->SetRenderState(D3DRS_LIGHTING, TRUE);    // turn on the 3D lighting
+		device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+		device->SetRenderState(D3DRS_ZENABLE, TRUE);    // turn on the z-buffer
+		device->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+		//device->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(70, 70, 70));    // ambient light
+
 		init_done = 1;
 		return 0;
 	}
 
-	int loop(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
+	virtual int loop(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	{
-
 		if (init_done == 0)
 			if (0 != do_init(d3d, device))
 				return -1;
-
-		device->SetRenderState(D3DRS_LIGHTING, TRUE);    // turn on the 3D lighting
-		//device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-		device->SetRenderState(D3DRS_ZENABLE, TRUE);    // turn on the z-buffer
-		device->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
-		//device->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(70, 70, 70));    // ambient light
 
 		device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0x33, 0x4d, 0x4d), 1.0f, 0);
 		device->Clear(0, NULL, D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
@@ -575,13 +590,20 @@ namespace lightbox {
 
 		return 0;
 	}
+};
+
+Demo *factory_lightbox_create()
+{
+	return new LightBox();
 }
 
-namespace normalsgen {
+class NormalsGen : public Demo
+{
+	struct mesh_obj objects[1];
+public:
+	NormalsGen() : Demo() {};
 
-	static struct mesh_obj objects[1];
-	static int init_done = 0;
-	static int do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
+	virtual int do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	{
 		load_mesh("cube1.obj", "Object.1", device, objects[0]);
 
@@ -635,22 +657,21 @@ namespace normalsgen {
 		D3DXVec3Cross(&n5, &s65, &s54);
 		D3DXVec3Normalize(&n5, &n5);
 
+		device->SetRenderState(D3DRS_LIGHTING, TRUE);    // turn on the 3D lighting
+		device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+		device->SetRenderState(D3DRS_ZENABLE, TRUE);    // turn on the z-buffer
+		device->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+		//device->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(70, 70, 70));    // ambient light
+
 		init_done = 1;
 		return 0;
 	}
 
-	int loop(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
+	virtual int loop(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	{
-
 		if (init_done == 0)
 			if (0 != do_init(d3d, device))
 				return -1;
-
-		device->SetRenderState(D3DRS_LIGHTING, TRUE);    // turn on the 3D lighting
-		//device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-		device->SetRenderState(D3DRS_ZENABLE, TRUE);    // turn on the z-buffer
-		device->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
-		//device->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(70, 70, 70));    // ambient light
 
 		device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0x33, 0x4d, 0x4d), 1.0f, 0);
 		device->Clear(0, NULL, D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
@@ -698,7 +719,7 @@ namespace normalsgen {
 		camRotate *= *D3DXMatrixRotationZ(&scratch, rotz);
 		D3DXVECTOR3 camerapos, cameraup;
 
-		D3DXVec3TransformCoord(&camerapos, &D3DXVECTOR3(0.0f, 20.0f, -50.0f), &camRotate);
+		D3DXVec3TransformCoord(&camerapos, &D3DXVECTOR3(0.0f, 10.0f, -20.0f), &camRotate);
 		D3DXVec3TransformCoord(&cameraup, &D3DXVECTOR3(0.0f, 1.0f, 0.0f), &camRotate);
 		// set the view transform
 		D3DXMATRIX matView;
@@ -758,4 +779,9 @@ namespace normalsgen {
 
 		return 0;
 	}
+};
+
+Demo *factory_normalsgen_create()
+{
+	return new NormalsGen();
 }

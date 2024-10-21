@@ -78,15 +78,23 @@ int load_mesh(const char *file, const char *name, LPDIRECT3DDEVICE9 device, stru
 
 			//std::cout << "vsz " << sizeof(struct CUSTOMVERTEX) * mesh.Vertices.size() << " wr " << (char*)elm - (char*)pVoid << std::endl;
 
-			device->CreateIndexBuffer(mesh.Indices.size() * sizeof(short),
+#if 1
+			typedef short index_t;
+			const D3DFORMAT index_fmt = D3DFMT_INDEX16;
+#else
+			typedef int32_t index_t;
+			const D3DFORMAT index_fmt = D3DFMT_INDEX32;
+#endif
+
+			device->CreateIndexBuffer(mesh.Indices.size() * sizeof(index_t),
 				0,
-				D3DFMT_INDEX16,
+				index_fmt,
 				D3DPOOL_MANAGED,
 				&out.i_buffer,
 				NULL);
 
 			out.i_buffer->Lock(0, 0, (void**)&pVoid, 0);
-			short *idx = (short *)pVoid;
+			index_t *idx = (index_t *)pVoid;
 			for (auto it = mesh.Indices.begin(); it != mesh.Indices.end(); it+=3, idx+=3)
 			{
 				//since the faces are enumerated counter-clockwise, reverse the indexes to get them clock-wise

@@ -19,8 +19,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd,
 
 extern int run_tests();
 extern int call_loop_unit1(int& selection, LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device);
+extern int call_loop_unit2(int& selection, LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device);
+extern int call_loop_unit3(int& selection, LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device);
 
 static int selection = INT_MAX;
+static int active_unit = INT_MAX;
 
 
 // this function initializes and prepares Direct3D for use
@@ -28,23 +31,101 @@ void initD3D(HWND hWnd, LPDIRECT3D9& d3d, LPDIRECT3DDEVICE9& device)
 {
 	d3d = Direct3DCreate9(D3D_SDK_VERSION);    // create the Direct3D interface
 
+#if 1
+	const D3DFORMAT fmt_bb[] =
+	{
+		D3DFMT_A8R8G8B8,
+		D3DFMT_X8R8G8B8,
+		D3DFMT_R5G6B5,
+		D3DFMT_X1R5G5B5,
+		D3DFMT_A1R5G5B5,
+	};
+	const D3DFORMAT fmt_ds[] =
+	{
+		//D3DFMT_D32,
+		D3DFMT_D24S8,
+		D3DFMT_D24X4S4,
+		D3DFMT_D24X8,
+		D3DFMT_D16
+	};
+
+	const int minwidth = 800;
+	const int minheight = 600;
+
+	int bb_match = 100;
+	int ds_match = 100;
+
+	int numadapters = d3d->GetAdapterCount();
+	//for (int i = 0; i < numadapters; i++)
+	int i = D3DADAPTER_DEFAULT;
+	{
+		D3DADAPTER_IDENTIFIER9 ident;
+		d3d->GetAdapterIdentifier(i, 0, &ident);
+
+		D3DCAPS9 caps;
+		d3d->GetDeviceCaps(i, D3DDEVTYPE_HAL, &caps);
+
+		D3DDISPLAYMODE desktopMode;
+		d3d->GetAdapterDisplayMode(i, &desktopMode);
+		for (int ibb = 0; ibb < ARRAYSIZE(fmt_bb); ibb++)
+		{
+			bool bbworks = SUCCEEDED(d3d->CheckDeviceFormat(i, D3DDEVTYPE_HAL, desktopMode.Format,
+				0, D3DRTYPE_SURFACE, fmt_bb[ibb]));
+			printf("bb %d %d\n", fmt_bb[ibb], bbworks);
+			if (bbworks)
+			{
+				for (int ids = 0; ids < ARRAYSIZE(fmt_ds); ids++)
+				{
+					bool dsworks = SUCCEEDED(d3d->CheckDeviceFormat(i, D3DDEVTYPE_HAL, desktopMode.Format,
+						D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, fmt_ds[ids]));
+					//printf("ds %d %d\n", fmt_ds[ids], dsworks);
+					if (dsworks)
+					{
+						if (SUCCEEDED(d3d->CheckDepthStencilMatch(i, D3DDEVTYPE_HAL, desktopMode.Format,
+							fmt_bb[ibb], fmt_ds[ids])))
+						{
+							if (ibb < bb_match) bb_match = ibb;
+							if (ids < ds_match) ds_match = ids;
+							printf("> %d works with %d\n", fmt_bb[ibb], fmt_ds[ids]);
+						}
+					}
+				}
+			}
+		}
+
+		printf("selected bb %d ds %d\n", fmt_bb[bb_match], fmt_ds[ds_match]);
+
+		int nummodes = d3d->GetAdapterModeCount(i, desktopMode.Format);
+		for (int mode = 0; mode < nummodes; mode++)
+		{
+			D3DDISPLAYMODE dispMode;
+			d3d->EnumAdapterModes(i, desktopMode.Format, mode, &dispMode);
+			if (dispMode.Width < minwidth || dispMode.Height < minheight)
+				continue;
+			printf("%d x %d %dHz %d\n",
+				dispMode.Width, dispMode.Height, dispMode.RefreshRate,
+				dispMode.Format);
+		}
+	}
+#endif
+
 	D3DPRESENT_PARAMETERS d3dpp;    // create a struct to hold various device information
 
 	ZeroMemory(&d3dpp, sizeof(d3dpp));    // clear out the struct for use
 	d3dpp.Windowed = TRUE;    // program windowed, not fullscreen
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;    // discard old frames
 	d3dpp.hDeviceWindow = hWnd;    // set the window to be used by Direct3D
-	d3dpp.BackBufferFormat = D3DFMT_X8R8G8B8;    // set the back buffer format to 32-bit
+	d3dpp.BackBufferFormat = fmt_bb[bb_match];//D3DFMT_X8R8G8B8;    // set the back buffer format to 32-bit
 	d3dpp.BackBufferWidth = SCREEN_WIDTH;    // set the width of the buffer
 	d3dpp.BackBufferHeight = SCREEN_HEIGHT;    // set the height of the buffer
 	d3dpp.EnableAutoDepthStencil = TRUE;
-	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
+	d3dpp.AutoDepthStencilFormat = fmt_ds[ds_match];// D3DFMT_D16;
 
 	// create a device class using this information and information from the d3dpp stuct
 	d3d->CreateDevice(D3DADAPTER_DEFAULT,
 		D3DDEVTYPE_HAL,
 		hWnd,
-		D3DCREATE_SOFTWARE_VERTEXPROCESSING,
+		D3DCREATE_HARDWARE_VERTEXPROCESSING,
 		&d3dpp,
 		&device);
 }
@@ -63,7 +144,7 @@ int main()
 
 	run_tests();
 
-	HINSTANCE hInstance = (HINSTANCE)GetCurrentProcess();
+	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);// (HINSTANCE)GetCurrentProcess();
 	int nCmdShow = SW_SHOWNORMAL;
 
 	// the handle for the window, filled by a function
@@ -80,7 +161,7 @@ int main()
 	wc.lpfnWndProc = WindowProc;
 	wc.hInstance = hInstance;
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	//wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
+	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);// (HBRUSH)COLOR_WINDOW;
 	wc.lpszClassName = WNDCLASS_NAME;
 
 	// register the window class
@@ -102,7 +183,7 @@ int main()
 
 	if (hWnd == NULL)
 	{
-		retcode = GetLastError();
+		retcode = HRESULT_FROM_WIN32(GetLastError());
 		goto exit_main;
 	}
 
@@ -153,8 +234,22 @@ int main()
 			if (end_msg_loop)
 				break;
 
+			int unit_res = -1;
+			switch (active_unit)
+			{
+			case 1:
+				unit_res = call_loop_unit1(selection, d3d, d3ddev);
+				break;
+			case 2:
+				unit_res = call_loop_unit2(selection, d3d, d3ddev);
+				break;
+			default:
+			case 3:
+				unit_res = call_loop_unit3(selection, d3d, d3ddev);
+				break;
+			}
 			// Run game code here
-			if(0 != call_loop_unit1(selection, d3d, d3ddev))
+			if(0 != unit_res)
 				break;
 		}
 		cleanD3D(d3d, d3ddev);
@@ -162,7 +257,7 @@ int main()
 		DeleteObject(hWnd);
 
 		// return this part of the WM_QUIT message to Windows
-		retcode = msg.wParam;
+		retcode = (int)msg.wParam;
 	}
 
 exit_main:
@@ -220,6 +315,15 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			if (wParam == 'T')
 			{
 				pressed.t = 1;
+			}
+			if (wParam == 'F')
+			{
+				pressed.f = 1;
+			}
+			if (wParam >= VK_F1 && wParam <= VK_F12 && VK_F1 < VK_F12)
+			{
+				active_unit = 1 + ((int)wParam - VK_F1);
+				selection = INT_MAX;
 			}
 		break;
 		// this message is read when the window is closed

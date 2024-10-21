@@ -22,6 +22,18 @@
     <Filter Include="Resource Files\data">
       <UniqueIdentifier>{6fae7283-de05-4cdc-a150-9d0da570b004}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Shaders">
+      <UniqueIdentifier>{c11832e8-b335-463c-9f9f-fe22905fb766}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Shaders">
+      <UniqueIdentifier>{c988be7e-d3a7-4940-9c26-b016fb658bd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Textures">
+      <UniqueIdentifier>{c11a0a71-fd2b-4080-bc8f-89ef1f2b49e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Textures">
+      <UniqueIdentifier>{80a71a1c-b256-4c2b-a378-47c9b1685488}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_main.cpp">
@@ -51,22 +63,25 @@
     <ClCompile Include="mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="1.Basics\blending.cpp">
+      <Filter>Source Files\Basics</Filter>
+    </ClCompile>
+    <ClCompile Include="2.Shaders\_shaders.cpp">
+      <Filter>Source Files\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="2.Shaders\pass_shaders.cpp">
+      <Filter>Source Files\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="3.Textures\_textures.cpp">
+      <Filter>Source Files\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="3.Textures\textured_triangle.cpp">
+      <Filter>Source Files\Textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
       <Filter>Resource Files</Filter>
-    </None>
-    <None Include="data\cube1.mtl">
-      <Filter>Resource Files\data</Filter>
-    </None>
-    <None Include="data\shapes.mtl">
-      <Filter>Resource Files\data</Filter>
-    </None>
-    <None Include="data\cube1.obj">
-      <Filter>Resource Files\data</Filter>
-    </None>
-    <None Include="data\shapes.obj">
-      <Filter>Resource Files\data</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -76,5 +91,46 @@
     <ClInclude Include="helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="2.Shaders\shaders.h">
+      <Filter>Header Files\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="DemoClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3.Textures\textures.h">
+      <Filter>Header Files\Textures</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="data\cube1.mtl">
+      <Filter>Resource Files\data</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data\cube1.obj">
+      <Filter>Resource Files\data</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data\shapes.mtl">
+      <Filter>Resource Files\data</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="data\shapes.obj">
+      <Filter>Resource Files\data</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="2.Shaders\pass_pixel.hlsl">
+      <Filter>Source Files\Shaders</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="2.Shaders\pass_vertex.hlsl">
+      <Filter>Source Files\Shaders</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="3.Textures\tex_pixel.hlsl">
+      <Filter>Source Files\Textures</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="3.Textures\castle_walls_short.jpg">
+      <Filter>Source Files\Textures</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="3.Textures\painting-21.jpg">
+      <Filter>Source Files\Textures</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="3.Textures\tex_vertex.hlsl">
+      <Filter>Source Files\Textures</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>

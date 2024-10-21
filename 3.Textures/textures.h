@@ -2,5 +2,5 @@
 
 #include "helper.h"
 
-#define RSRCDIR ".\\1.Basics\\"
+#define RSRCDIR ".\\3.textures\\"
 #define RSRC(A) RSRCDIR##A
