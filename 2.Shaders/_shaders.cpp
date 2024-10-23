@@ -26,11 +26,7 @@ int call_loop_unit2(int& selection, LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	}
 	else
 	{
-		if (last_demo)
-		{
-			delete last_demo;
-			last_demo = 0;
-		}
+		clear_last_demo();
 
 		do_selection(last_demo, selection);
 

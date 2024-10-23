@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <time.h>
@@ -16,14 +18,38 @@
 
 typedef unsigned int uint;
 
-// define the screen resolution
-#define SCREEN_WIDTH  800
-#define SCREEN_HEIGHT 600
+#define xstr(a) str(a)
+#define str(a) #a
 
+#define RTN_ON_FAILURE(X) if(FAILED(X)) { return -1; }
+#define MSG_ON_FAILURE(X) if(FAILED(X)) { msg_func(__FILE__, xstr(__LINE__)); }
 
+struct dx_state
+{
+	LPDIRECT3D9 d3d;
+	LPDIRECT3DDEVICE9 device;
+	HINSTANCE happ;
+	HWND hwindow;
+	UINT width;
+	UINT height;
+	FLOAT aspect_ratio;
+	bool windowed;
+	bool vsync;
+	bool wvisible;
+	WINDOWPLACEMENT wplacement;
+	D3DDISPLAYMODE desktop;
+	std::vector<D3DDISPLAYMODE> modes;
+	D3DFORMAT fmt_backbuffer;
+	D3DFORMAT fmt_depthstencil;
+	D3DADAPTER_IDENTIFIER9 adapter_info;
+	D3DCAPS9 caps;
+};
+
+extern struct dx_state dx_state1;
 extern Demo *last_demo;
 extern int last_selection;
 
+void clear_last_demo();
 
 struct mesh_obj
 {
@@ -46,10 +72,12 @@ union inputs
 		int ctrl : 1;
 		uint t : 1;
 		uint f : 1;
+		uint v : 1;
 	};
 	uint all;
 };
 
 void store_keypress(union inputs val);
-
 union inputs get_keypress();
+
+int msg_func(const char *one, const char *two);

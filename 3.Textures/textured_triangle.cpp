@@ -148,7 +148,7 @@ public:
 		D3DXMATRIX matProjection;
 		D3DXMatrixPerspectiveFovLH(&matProjection,
 			D3DXToRadian(45),
-			(FLOAT)SCREEN_WIDTH / (FLOAT)SCREEN_HEIGHT,
+			dx_state1.aspect_ratio,
 			1.0f,    // the near view-plane
 			1000.0f);    // the far view-plane
 		//device->SetTransform(D3DTS_PROJECTION, &matProjection);
@@ -179,7 +179,7 @@ public:
 		device->SetTexture(0, texture);
 		device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_ANISOTROPIC);
 		device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);
-		device->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_ANISOTROPIC);
+		device->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 		device->SetSamplerState(0, D3DSAMP_MAXANISOTROPY, 4);
 
 		device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);

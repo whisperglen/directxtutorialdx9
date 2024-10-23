@@ -18,7 +18,7 @@ int load_mesh(const char *file, const char *name, LPDIRECT3DDEVICE9 device, stru
 
 	LARGE_INTEGER start, end;
 	QueryPerformanceFrequency(&start);
-	double freq = start.QuadPart / 1000;
+	double freq = (double)start.QuadPart / 1000;
 
 	const auto search = loaderCache.find(file);
 	if (search != loaderCache.end())
@@ -37,7 +37,7 @@ int load_mesh(const char *file, const char *name, LPDIRECT3DDEVICE9 device, stru
 			loaderCache[file] = loader;
 
 			QueryPerformanceCounter(&end);
-			std::cout << "Loaded " << file << " in: " << (end.QuadPart - start.QuadPart) / freq << std::endl;
+			std::cout << "Loaded " << file << " in: " << (double)(end.QuadPart - start.QuadPart) / freq << std::endl;
 		}
 		else return -1;
 	}
