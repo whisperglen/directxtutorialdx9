@@ -289,7 +289,7 @@ int process_parameter_change(dx_state_change change)
 	if (FAILED(hr))
 	{
 		printf("failed to reset device %d\n", HRESULT_CODE(hr));
-		PostQuitMessage(-1);
+		PostQuitMessage(3);
 	}
 
 	if ( ! dx_state1.wvisible )
@@ -434,6 +434,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		case WM_KEYDOWN:
 			if (wParam == VK_ESCAPE)
 			{
+				if (dx_state1.windowed == false)
+					process_parameter_change(DXSTATE_FULLSCREEN);
 				PostQuitMessage(0);
 				return 0;
 			}
