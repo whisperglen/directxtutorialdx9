@@ -67,6 +67,13 @@ void initD3D(HWND, LPDIRECT3D9& d3d, LPDIRECT3DDEVICE9& device)
 	int i = D3DADAPTER_DEFAULT;
 	{
 		d3d->GetAdapterIdentifier(i, 0, &dx_state1.adapter_info);
+		LARGE_INTEGER nDriverVersion;
+		nDriverVersion.QuadPart = dx_state1.adapter_info.DriverVersion.QuadPart;
+		WORD nProduct = HIWORD(nDriverVersion.HighPart);
+		WORD nVersion = LOWORD(nDriverVersion.HighPart);
+		WORD nSubVersion = HIWORD(nDriverVersion.LowPart);
+		WORD nBuild = LOWORD(nDriverVersion.LowPart);
+		printf("driver version %d %d %d %d\n", nProduct, nVersion, nSubVersion, nBuild);
 
 		d3d->GetDeviceCaps(i, D3DDEVTYPE_HAL, &dx_state1.caps);
 
@@ -289,7 +296,7 @@ int process_parameter_change(dx_state_change change)
 	if (FAILED(hr))
 	{
 		printf("failed to reset device %d\n", HRESULT_CODE(hr));
-		PostQuitMessage(-1);
+		PostQuitMessage(3);
 	}
 
 	if ( ! dx_state1.wvisible )
@@ -411,7 +418,6 @@ int main()
 	cleanD3D(dx_state1.d3d, dx_state1.device);
 	ShowWindow(dx_state1.hwindow, SW_HIDE);
 	DestroyWindow(dx_state1.hwindow);
-	DeleteObject(dx_state1.hwindow);
 
 	// return this part of the WM_QUIT message to Windows
 	retcode = (int)msg.wParam;
@@ -434,6 +440,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		case WM_KEYDOWN:
 			if (wParam == VK_ESCAPE)
 			{
+				if (dx_state1.windowed == false)
+					process_parameter_change(DXSTATE_FULLSCREEN);
 				PostQuitMessage(0);
 				return 0;
 			}
