@@ -2,15 +2,19 @@
 #include "textures.h"
 
 Demo *factory_textured_triangle_create();
+Demo *factory_texture_ops_create();
 
 static void do_selection(Demo* &demo, int & selection)
 {
 	switch (selection)
 	{
-	default:
-		selection = 0;
 	case 0:
 		demo = factory_textured_triangle_create();
+		break;
+	default:
+		selection = 0;
+	case 1:
+		demo = factory_texture_ops_create();
 		break;
 
 	}

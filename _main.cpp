@@ -73,7 +73,7 @@ void initD3D(HWND, LPDIRECT3D9& d3d, LPDIRECT3DDEVICE9& device)
 		WORD nVersion = LOWORD(nDriverVersion.HighPart);
 		WORD nSubVersion = HIWORD(nDriverVersion.LowPart);
 		WORD nBuild = LOWORD(nDriverVersion.LowPart);
-		printf("driver version %d %d %d %d\n", nProduct, nVersion, nSubVersion, nBuild);
+		//printf("driver version %d %d %d %d\n", nProduct, nVersion, nSubVersion, nBuild);
 
 		d3d->GetDeviceCaps(i, D3DDEVTYPE_HAL, &dx_state1.caps);
 
@@ -82,7 +82,7 @@ void initD3D(HWND, LPDIRECT3D9& d3d, LPDIRECT3DDEVICE9& device)
 		{
 			bool bbworks = SUCCEEDED(d3d->CheckDeviceFormat(i, D3DDEVTYPE_HAL, dx_state1.desktop.Format,
 				0, D3DRTYPE_SURFACE, fmt_bb[ibb]));
-			printf("bb %d %d\n", fmt_bb[ibb], bbworks);
+			//printf("bb %d %d\n", fmt_bb[ibb], bbworks);
 			if (bbworks)
 			{
 				for (int ids = 0; ids < ARRAYSIZE(fmt_ds); ids++)
@@ -99,7 +99,7 @@ void initD3D(HWND, LPDIRECT3D9& d3d, LPDIRECT3DDEVICE9& device)
 								bb_match = ibb;
 								ds_match = ids;
 							}
-							printf("> %d works with %d\n", fmt_bb[ibb], fmt_ds[ids]);
+							//printf("> %d works with %d\n", fmt_bb[ibb], fmt_ds[ids]);
 						}
 					}
 				}
@@ -108,7 +108,7 @@ void initD3D(HWND, LPDIRECT3D9& d3d, LPDIRECT3DDEVICE9& device)
 
 		dx_state1.fmt_backbuffer = fmt_bb[bb_match];
 		dx_state1.fmt_depthstencil = fmt_ds[ds_match];
-		printf("selected bb %d ds %d\n", fmt_bb[bb_match], fmt_ds[ds_match]);
+		//printf("selected bb %d ds %d\n", fmt_bb[bb_match], fmt_ds[ds_match]);
 
 		dx_state1.modes.clear();
 
@@ -120,16 +120,14 @@ void initD3D(HWND, LPDIRECT3D9& d3d, LPDIRECT3DDEVICE9& device)
 			if (dispMode.Width < minwidth || dispMode.Height < minheight)
 				continue;
 			dx_state1.modes.push_back(dispMode);
-			printf("%d x %d %dHz %d\n",
-				dispMode.Width, dispMode.Height, dispMode.RefreshRate,
-				dispMode.Format);
+			//printf("%d x %d %dHz %d\n", dispMode.Width, dispMode.Height, dispMode.RefreshRate, dispMode.Format);
 		}
 	}
 
 	int ercd = create_window();
 	if (ercd != 0)
 	{
-		printf("failed to create window %d\n", ercd);
+		std::cout << "failed to create window " << ercd << std::endl;
 		PostQuitMessage(2);
 	}
 
@@ -145,7 +143,7 @@ void initD3D(HWND, LPDIRECT3D9& d3d, LPDIRECT3DDEVICE9& device)
 
 	if (FAILED(hr))
 	{
-		printf("failed to create device %d\n", HRESULT_CODE(hr));
+		std::cout << "failed to create device " << HRESULT_CODE(hr) << std::endl;
 		PostQuitMessage(1);
 	}
 }
@@ -295,7 +293,7 @@ int process_parameter_change(dx_state_change change)
 	hr = dx_state1.device->Reset(&d3dpp);
 	if (FAILED(hr))
 	{
-		printf("failed to reset device %d\n", HRESULT_CODE(hr));
+		std::cout << "failed to reset device " << HRESULT_CODE(hr) << std::endl;
 		PostQuitMessage(3);
 	}
 
@@ -504,7 +502,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			static int count = 0;
 			RECT rc;
 			GetClientRect(dx_state1.hwindow, &rc);
-			printf("%d wm_size %dx%d %dx%d\n", count++, rc.right, rc.bottom, dx_state1.width, dx_state1.height);
+			std::cout << count++ << " wm_size " << rc.right << "x" << rc.bottom << " " << dx_state1.width << "x" << dx_state1.height << std::endl;
 			if (dx_state1.windowed && (rc.right != dx_state1.width ||
 				rc.bottom != dx_state1.height))
 			{

@@ -78,6 +78,9 @@
     <ClCompile Include="3.Textures\textured_triangle.cpp">
       <Filter>Source Files\Textures</Filter>
     </ClCompile>
+    <ClCompile Include="3.Textures\texture_ops.cpp">
+      <Filter>Source Files\Textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
@@ -132,5 +135,10 @@
     <CopyFileToFolders Include="3.Textures\tex_vertex.hlsl">
       <Filter>Source Files\Textures</Filter>
     </CopyFileToFolders>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="3.Textures\tex_ops.hlsl">
+      <Filter>Source Files\Textures</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
