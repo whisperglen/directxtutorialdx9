@@ -429,7 +429,9 @@ int main()
 // this is the main message handler for the program
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	static bool in_size_move = false;
 	static bool ctrl_pressed = false;
+	static bool shift_pressed = false;
 	union inputs pressed = { 0 };
 
 	// sort through and find what code to run for the message given
@@ -447,6 +449,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			{
 				ctrl_pressed = true;
 			}
+			if (wParam == VK_SHIFT)
+			{
+				shift_pressed = true;
+			}
 		break;
 		case WM_KEYUP:
 			if (wParam == VK_TAB)
@@ -456,6 +462,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			if (wParam == VK_CONTROL)
 			{
 				ctrl_pressed = false;
+			}
+			if (wParam == VK_SHIFT)
+			{
+				shift_pressed = false;
 			}
 			if (wParam == VK_UP)
 			{
@@ -490,6 +500,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 				active_unit = 1 + ((int)wParam - VK_F1);
 				selection = INT_MAX;
 			}
+			if (wParam == 'P')
+			{
+				pressed.p = 1;
+			}
 		break;
 		// this message is read when the window is closed
 		case WM_DESTROY:
@@ -501,6 +515,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		{
 			static int count = 0;
 			RECT rc;
+
+			in_size_move = false;
+
 			GetClientRect(dx_state1.hwindow, &rc);
 			std::cout << count++ << " wm_size " << rc.right << "x" << rc.bottom << " " << dx_state1.width << "x" << dx_state1.height << std::endl;
 			if (dx_state1.windowed && (rc.right != dx_state1.width ||
@@ -510,6 +527,31 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 				dx_state1.height = rc.bottom;
 
 				process_parameter_change(DXSTATE_WIN_SIZE);
+				clear_last_demo();
+			}
+		}
+		break;
+		case WM_ENTERSIZEMOVE:
+			in_size_move = true;
+			break;
+		case WM_SIZE:
+		{
+			if (wParam == SIZE_MAXIMIZED || (!in_size_move && wParam == SIZE_RESTORED))
+			{
+				RECT rc;
+				GetClientRect(dx_state1.hwindow, &rc);
+				if (dx_state1.windowed && (rc.right != dx_state1.width ||
+					rc.bottom != dx_state1.height))
+				{
+					std::cout << (wParam == SIZE_MAXIMIZED ? "maximize " : "restore ");
+					std::cout << rc.right << "x" << rc.bottom << " " << dx_state1.width << "x" << dx_state1.height << std::endl;
+
+					dx_state1.width = rc.right;
+					dx_state1.height = rc.bottom;
+
+					process_parameter_change(DXSTATE_WIN_SIZE);
+					clear_last_demo();
+				}
 			}
 		}
 		break;
@@ -517,6 +559,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 	if (ctrl_pressed)
 		pressed.ctrl = 1;
+	if (shift_pressed)
+		pressed.shift = 1;
 
 	if (pressed.all != 0)
 		store_keypress(pressed);

@@ -12,7 +12,7 @@ static void do_selection(Demo* &demo, int & selection)
 		demo = factory_textured_triangle_create();
 		break;
 	default:
-		selection = 0;
+		selection = 1;
 	case 1:
 		demo = factory_texture_ops_create();
 		break;

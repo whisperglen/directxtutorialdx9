@@ -70,9 +70,11 @@ union inputs
 		int horiz : 2;
 		int vert : 2;
 		int ctrl : 1;
+		int shift : 1;
 		uint t : 1;
 		uint f : 1;
 		uint v : 1;
+		uint p : 1;
 	};
 	uint all;
 };

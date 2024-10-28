@@ -1,6 +1,9 @@
 
 #include "textures.h"
 
+using std::cout;
+using std::endl;
+
 struct CUSTOMVERTEX
 {
 	FLOAT X, Y, Z;
@@ -15,14 +18,16 @@ class TextureOps : public Demo
 	LPDIRECT3DVERTEXSHADER9 vs;
 	LPDIRECT3DPIXELSHADER9 ps;
 	LPD3DXCONSTANTTABLE constants;
-	LPDIRECT3DTEXTURE9 texture[2];
+	LPDIRECT3DTEXTURE9 texture[5];
 
 	LPDIRECT3D9 _d3d;
 	LPDIRECT3DDEVICE9 _device;
 
 	bool with_shaders;
+	int framecount;
 public:
-	TextureOps() : Demo(), v_buffer(0), vs(0), ps(0), constants(0), texture(), _d3d(0), _device(0), with_shaders(false) {}
+	TextureOps() : Demo(), v_buffer(0), vs(0), ps(0), constants(0), texture(), _d3d(0), _device(0),
+		with_shaders(false), framecount() {}
 
 	virtual int do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	{
@@ -33,6 +38,17 @@ public:
 			{ 0.0f, 3.46f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 0.5f, 0.0f, },
 			{ 3.0f, -1.73f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 1.0f, },
 			{ -3.0f, -1.73f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 0.0f, 1.0f, },
+
+			{ 4.0f, 4.f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0.0f, },
+			{ 4.0f, -4.f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 1.0f, },
+			{ -4.0f, 4.f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 0.0f, 0.0f, },
+			{ -4.0f, -4.f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 0.0f, 1.0f, },
+
+			{ 20.0f, 1.f, 0.0f, D3DCOLOR_XRGB(255, 255, 0), 10.0f, 0.0f, },
+			{ 20.0f, -1.f, 0.0f, D3DCOLOR_XRGB(255, 255, 0), 10.0f, 1.0f, },
+			{ -20.0f, 1.f, 0.0f, D3DCOLOR_XRGB(255, 255, 0), 0.0f, 0.0f, },
+			{ -20.0f, -1.f, 0.0f, D3DCOLOR_XRGB(255, 255, 0), 0.0f, 1.0f, },
+
 		};
 
 		// create the vertex and store the pointer into v_buffer, which is created globally
@@ -57,14 +73,14 @@ public:
 			res = D3DXCompileShaderFromFileA(RSRC("tex_vertex.hlsl"), nullptr, nullptr, "main", "vs_3_0", 0, &vertexShaderBuffer, nullptr, &constants);
 			if (FAILED(res))
 			{
-				std::cout << "Failed compilation: " << HRESULT_FACILITY(res) << " " << HRESULT_CODE(res) << std::endl;
+				cout << "Failed compilation: " << HRESULT_FACILITY(res) << " " << HRESULT_CODE(res) << endl;
 				return -1;
 			}
 
 			res = D3DXCompileShaderFromFileA(RSRC("tex_ops.hlsl"), nullptr, nullptr, "main", "ps_3_0", 0, &pixelShaderBuffer, nullptr, nullptr);
 			if (FAILED(res))
 			{
-				std::cout << "Failed compilation: " << HRESULT_FACILITY(res) << " " << HRESULT_CODE(res) << std::endl;
+				cout << "Failed compilation: " << HRESULT_FACILITY(res) << " " << HRESULT_CODE(res) << endl;
 				return -1;
 			}
 
@@ -75,60 +91,76 @@ public:
 			pixelShaderBuffer->Release();
 		}
 
+		res = D3DXCreateTextureFromFileA(device, RSRC("castle_walls_short.jpg"), &texture[0]);
+		if (FAILED(res))
+		{
+			cout << "Failed loading texture 0 code: " << HRESULT_CODE(res) << endl;
+			return -1;
+		}
+		cout << "Tex0 lvls:" << texture[0]->GetLevelCount() << endl;
+
 		D3DERR_INVALIDCALL;
 		const int size = 256;
-		DWORD usage = D3DUSAGE_AUTOGENMIPMAP | D3DUSAGE_DYNAMIC;
+		DWORD usage = D3DUSAGE_AUTOGENMIPMAP /*| D3DUSAGE_DYNAMIC*/;
 		//D3DPOOL pool = D3DPOOL_DEFAULT;
 		D3DPOOL pool = D3DPOOL_MANAGED;
-		for (int i = 0; i < 2; i++)
+		for (int i = 1; i < ARRAYSIZE(texture); i++)
 		{
-			res = device->CreateTexture(size, size, 1, 0, D3DFMT_A8R8G8B8, pool, &texture[i], NULL);
+			res = device->CreateTexture(size, size, 0, usage, D3DFMT_A8R8G8B8, pool, &texture[i], NULL);
 			if (FAILED(res))
 			{
-				std::cout << "Failed loading texture " << i << " code: " << HRESULT_CODE(res) << std::endl;
+				cout << "Failed loading texture " << i << " code: " << HRESULT_CODE(res) << endl;
 				return -1;
 			}
 		}
 
-		D3DLOCKED_RECT lr;
-		res = texture[0]->LockRect(0, &lr, NULL, 0);
-		if (SUCCEEDED(res))
-		{
-			uint32_t *data = (uint32_t*)lr.pBits;
-			for (int x = 0; x < size; x++)
-			{
-				int scaledx = float(x) / size * 255;
-				for (int y = 0; y < size; y++)
-				{
-					int scaledy = float(y) / size * 255;
-					int r = scaledx;
-					int g = 0;
-					int b = 0;
-					int a = scaledy;
-					data[x*size + y] = D3DCOLOR_ARGB(a, r, g, b);
-				}
-			}
-			texture[0]->UnlockRect(0);
-		}
+		cout << "AutoMipmap support: " << (D3D_OK == d3d->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8,
+			D3DUSAGE_AUTOGENMIPMAP, D3DRTYPE_TEXTURE, D3DFMT_A8R8G8B8)) << endl;
 
+		D3DLOCKED_RECT lr;
 		res = texture[1]->LockRect(0, &lr, NULL, 0);
 		if (SUCCEEDED(res))
 		{
 			uint32_t *data = (uint32_t*)lr.pBits;
-			for (int x = 0; x < size; x++)
+			memset(data, 255, size * size * 4);
+			for (int x = size / 5; x < size * 4 / 5; x++)
 			{
-				int scaledx = float(x) / size * 255;
-				for (int y = 0; y < size; y++)
+				int scaledx = int(float(x) / size * 255);
+				for (int y = size / 5; y < size * 4 / 5; y++)
 				{
-					int scaledy = float(y) / size * 255;
-					int r = 0;
-					int g = scaledy;
+					int scaledy = int(float(y) / size * 255);
+					int r = scaledx;
+					int g = 0;
 					int b = 0;
-					int a = 255;
+					int a = 0;
 					data[x*size + y] = D3DCOLOR_ARGB(a, r, g, b);
 				}
 			}
 			texture[1]->UnlockRect(0);
+			texture[1]->GenerateMipSubLevels();
+		}
+		cout << "Tex1 lvls:" << texture[1]->GetLevelCount() << endl;
+
+		res = texture[2]->LockRect(0, &lr, NULL, 0);
+		if (SUCCEEDED(res))
+		{
+			uint32_t *data = (uint32_t*)lr.pBits;
+			memset(data, 255, size * size * 4);
+			for (int x = size / 5; x < size * 4 / 5; x++)
+			{
+				int scaledx = int(float(x) / size * 255);
+				for (int y = size / 5; y < size * 4 / 5; y++)
+				{
+					int scaledy = int(float(y) / size * 255);
+					int r = 255;
+					int g = 0;
+					int b = 0;
+					int a = 0;
+					data[x*size + y] = D3DCOLOR_ARGB(a, r, g, b);
+				}
+			}
+			texture[2]->UnlockRect(0);
+			texture[2]->GenerateMipSubLevels();
 		}
 
 		device->SetRenderState(D3DRS_LIGHTING, FALSE);    // turn off the 3D lighting
@@ -154,7 +186,7 @@ public:
 
 		union inputs key = get_keypress();
 
-		static float scaling = 1.0f;
+		static float scaling = 0.6f;
 		if (key.vert && key.ctrl)
 		{
 			scaling += 0.05f * key.vert;
@@ -180,6 +212,12 @@ public:
 		// select which vertex format we are using
 		device->SetFVF(CUSTOMFVF);
 
+		if(with_shaders)
+		{
+			device->SetVertexShader(vs);
+			device->SetPixelShader(ps);
+		}
+
 		D3DXMATRIX camRotate;
 		D3DXMATRIX scratch;
 		D3DXMatrixRotationX(&camRotate, rotx);
@@ -195,14 +233,8 @@ public:
 			&camerapos,    // the camera position
 			&D3DXVECTOR3(0.0f, 0.0f, 0.0f),      // the look-at position
 			&cameraup);    // the up direction
-		if (!with_shaders)
-		{
-			device->SetTransform(D3DTS_VIEW, &matView);
-		}
-		else
-		{
-			constants->SetMatrix(device, "viewMatrix", &matView);
-		}
+		if (!with_shaders)    device->SetTransform(D3DTS_VIEW, &matView);
+		else                  constants->SetMatrix(device, "viewMatrix", &matView);
 
 		// set the projection transform
 		D3DXMATRIX matProjection;
@@ -211,54 +243,118 @@ public:
 			dx_state1.aspect_ratio,
 			1.0f,    // the near view-plane
 			1000.0f);    // the far view-plane
-		if (!with_shaders)
+		if (!with_shaders)    device->SetTransform(D3DTS_PROJECTION, &matProjection);
+		else                  constants->SetMatrix(device, "projectionMatrix", &matProjection);
+
+		device->SetStreamSource(0, v_buffer, 0, sizeof(CUSTOMVERTEX));
+
+
+		device->SetTexture(0, texture[0]);
+
+		if (framecount >= 2 * 60) { framecount = 0; }
+		if (framecount >= 1 * 60)
 		{
-			device->SetTransform(D3DTS_PROJECTION, &matProjection);
+			device->SetTexture(1, texture[2]);
 		}
 		else
 		{
-			constants->SetMatrix(device, "projectionMatrix", &matProjection);
+			device->SetTexture(1, texture[1]);
 		}
+
+		//device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+		device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
+		//device->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+		device->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 0);
+
+		device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+		device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);
+		device->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
+		device->SetSamplerState(0, D3DSAMP_MAXANISOTROPY, 4);
+		device->SetSamplerState(1, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+		device->SetSamplerState(1, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);
+		device->SetSamplerState(1, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
+		device->SetSamplerState(1, D3DSAMP_MAXANISOTROPY, 4);
 
 
 		// set the world transform
 		D3DXMATRIX matRotate;
 		D3DXMATRIX matScale;
 		D3DXMATRIX matScratch;
-		D3DXMatrixIdentity(&matRotate); D3DXMatrixIdentity(&matScale);
-		//D3DXMatrixRotationX(&matRotate, D3DXToRadian(-90));
-		//D3DXMatrixRotationY(&matScratch, rotate);
-		//matRotate *= matScratch;
+		D3DXMATRIX matTranslate;
+		D3DXMATRIX matWorld;
 		D3DXMatrixScaling(&matScale, scaling, scaling, scaling);
 
-		// set the stream source
-		device->SetStreamSource(0, v_buffer, 0, sizeof(CUSTOMVERTEX));
-
-		D3DXMATRIX matTranslate;
-		D3DXMatrixTranslation(&matTranslate, 0.0f, 0.0f, 00.0f);
-		if (!with_shaders)
-		{
-			device->SetTransform(D3DTS_WORLD, &(matTranslate));    // set the world transform
-		}
-		else
-		{
-			constants->SetMatrix(device, "worldMatrix", &matTranslate);
-
-			device->SetVertexShader(vs);
-			device->SetPixelShader(ps);
-		}
-
-		device->SetTexture(0, texture[0]);
-		device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_ANISOTROPIC);
-		device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);
-		device->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
-		device->SetSamplerState(0, D3DSAMP_MAXANISOTROPY, 4);
+		//draw triangle
+		D3DXMatrixTranslation(&matTranslate, -3.0f, 0.5f, 00.0f);
+		matWorld = matScale * matTranslate;
+		if (!with_shaders)    device->SetTransform(D3DTS_WORLD, &(matWorld));
+		else                  constants->SetMatrix(device, "worldMatrix", &(matWorld));
 
 		device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
+
+		//draw square
+		D3DXMatrixTranslation(&matTranslate, 3.0f, 1.0f, 00.0f);
+		matWorld = matScale * matTranslate;
+		if (!with_shaders)    device->SetTransform(D3DTS_WORLD, &(matWorld));
+		else                  constants->SetMatrix(device, "worldMatrix", &(matWorld));
+
+		device->DrawPrimitive(D3DPT_TRIANGLESTRIP, 3, 2);
+
+		//draw background rectangle
+		D3DXMatrixTranslation(&matWorld, 0.0f, 1.0f, 1.0f);
+		if (!with_shaders)    device->SetTransform(D3DTS_WORLD, &(matWorld));
+		else                  constants->SetMatrix(device, "worldMatrix", &(matWorld));
+
+		device->SetTexture(0, 0);
+		device->SetTexture(1, 0);
+
+		//device->DrawPrimitive(D3DPT_TRIANGLESTRIP, 7, 2);
+
+		//draw textured rectangle
+		D3DXMatrixRotationX(&matRotate, D3DXToRadian(90));
+		matRotate *= *D3DXMatrixRotationY(&matScratch, D3DXToRadian(90));
+		matRotate *= *D3DXMatrixRotationX(&matScratch, D3DXToRadian(-15));
+		D3DXMatrixTranslation(&matTranslate, 0.0f, 2.5f, 15.0f);
+		matWorld = matRotate * matTranslate;
+		if (!with_shaders)    device->SetTransform(D3DTS_WORLD, &(matWorld));
+		else                  constants->SetMatrix(device, "worldMatrix", &(matWorld));
+
+		device->SetTexture(0, texture[0]);
+		static D3DTEXTUREFILTERTYPE ftg = D3DTEXF_POINT;
+		static D3DTEXTUREFILTERTYPE ftn = D3DTEXF_POINT;
+		static D3DTEXTUREFILTERTYPE ftp = D3DTEXF_POINT;
+		if (key.p)
+		{
+			if ( key.ctrl)
+			{
+				ftp = D3DTEXTUREFILTERTYPE(1 + (int)ftp);
+				if (ftp > D3DTEXF_LINEAR) ftp = D3DTEXF_POINT;
+			}
+			else if (key.shift)
+			{
+				ftg = D3DTEXTUREFILTERTYPE(1 + (int)ftg);
+				if (ftg > D3DTEXF_ANISOTROPIC) ftg = D3DTEXF_POINT;
+			}
+			else
+			{
+				ftn = D3DTEXTUREFILTERTYPE(1 + (int)ftn);
+				if (ftn > D3DTEXF_ANISOTROPIC) ftn = D3DTEXF_POINT;
+			}
+		}
+		device->SetSamplerState(0, D3DSAMP_MAGFILTER, ftg);
+		device->SetSamplerState(0, D3DSAMP_MINFILTER, ftn);
+		device->SetSamplerState(0, D3DSAMP_MIPFILTER, ftp);
+		device->SetSamplerState(0, D3DSAMP_MAXANISOTROPY, 4);
+		device->SetTexture(1, 0);
+
+
+		device->DrawPrimitive(D3DPT_TRIANGLESTRIP, 7, 2);
 
 		device->EndScene();    // ends the 3D scene
 
 		device->Present(NULL, NULL, NULL, NULL);    // displays the created frame
+
+		framecount++;
 
 		return 0;
 	}
@@ -270,6 +366,7 @@ public:
 			_device->SetVertexShader(0);
 			_device->SetPixelShader(0);
 			_device->SetTexture(0, 0);
+			_device->SetTexture(1, 0);
 		}
 	}
 };
