@@ -16,6 +16,7 @@ Demo *factory_spotlight_create();
 Demo *factory_lightbox_create();
 Demo *factory_normalsgen_create();
 Demo *factory_blend_create();
+Demo *factory_cubetrianglestrip_create();
 
 static void do_selection(Demo* &demo, int & selection)
 {
@@ -63,11 +64,13 @@ static void do_selection(Demo* &demo, int & selection)
 	case 13:
 		demo = factory_normalsgen_create();
 		break;
-	default:
-		selection = 14;
 	case 14:
 		demo = factory_blend_create();
 		break;
+	default:
+		selection = 15;
+	case 15:
+		demo = factory_cubetrianglestrip_create();
 	}
 }
 

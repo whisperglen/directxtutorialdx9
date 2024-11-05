@@ -402,3 +402,142 @@ Demo *factory_pyramidspawn_create()
 {
 	return new PyramidSpawn();
 }
+
+class CubeTriangleStrip : public Demo
+{
+	LPDIRECT3DVERTEXBUFFER9 v_buffer;
+	LPDIRECT3DINDEXBUFFER9 i_buffer;
+public:
+	CubeTriangleStrip() : Demo() {};
+
+	virtual int do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
+	{
+		CUSTOMVERTEX vertices[] =
+		{
+			{ -1.0f, 1.0f, -1.0f, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f) }, // 0 Front-bottom-left
+			{ 1.0f, 1.0f, -1.0f, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f) }, // 1 Front-bottom-right
+			{ 1.0f,  1.0f, 1.0f, D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f) }, // 2 Front-top-left
+			{ -1.0f,  1.0f, 1.0f, D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f) }, // 3 Front-top-right
+			{ -1.0f, -1.0f,  -1.0f, D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f) }, // 4 Back-bottom-left
+			{ 1.0f, -1.0f,  -1.0f, D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f) }, // 5 Back-bottom-right
+			{ 1.0f,  -1.0f,  1.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f) }, // 6 Back-top-left
+			{ -1.0f,  -1.0f,  1.0f, D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f) }  // 7 Back-top-right
+		};
+
+		// create the vertex and store the pointer into v_buffer, which is created globally
+		device->CreateVertexBuffer(sizeof(vertices),
+			0,
+			CUSTOMFVF,
+			D3DPOOL_MANAGED,
+			&v_buffer,
+			NULL);
+
+		VOID* pVoid;    // the void pointer
+
+		v_buffer->Lock(0, 0, (void**)&pVoid, 0);    // lock the vertex buffer
+		memcpy(pVoid, vertices, sizeof(vertices));    // copy the vertices to the locked buffer
+		v_buffer->Unlock();    // unlock the vertex buffer
+
+		short indices[] =
+		{
+			2,3,6,
+			7,
+			4,
+			3,
+			0,
+			2,
+			1,
+			6,
+			5,
+			4,
+			1,
+			0
+		};
+
+		// create an index buffer interface called i_buffer
+		device->CreateIndexBuffer(sizeof(indices),
+			0,
+			D3DFMT_INDEX16,
+			D3DPOOL_MANAGED,
+			&i_buffer,
+			NULL);
+
+		// lock i_buffer and load the indices into it
+		i_buffer->Lock(0, 0, (void**)&pVoid, 0);
+		memcpy(pVoid, indices, sizeof(indices));
+		i_buffer->Unlock();
+
+		device->SetRenderState(D3DRS_LIGHTING, FALSE);    // turn off the 3D lighting
+		device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+		device->SetRenderState(D3DRS_ZENABLE, TRUE);    // turn on the z-buffer
+		device->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+
+		init_done = 1;
+		return 0;
+	}
+
+	virtual int loop(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
+	{
+		if (init_done == false)
+			if (0 != do_init(d3d, device))
+				return -1;
+
+		device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0x33, 0x4d, 0x4d), 1.0f, 0);
+		device->Clear(0, NULL, D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
+
+		device->BeginScene();
+
+		// select which vertex format we are using
+		device->SetFVF(CUSTOMFVF);
+
+		// SET UP THE PIPELINE
+
+		// set the view transform
+		D3DXMATRIX matView;    // the view transform matrix
+		D3DXMatrixLookAtLH(&matView,
+			&D3DXVECTOR3(4.0f, 5.0f, -6.0f),   // the camera position
+			&D3DXVECTOR3(0.0f, 0.0f, 0.0f),    // the look-at position
+			&D3DXVECTOR3(0.0f, 1.0f, 0.0f));    // the up direction
+		device->SetTransform(D3DTS_VIEW, &matView);    // set the view transform to matView
+
+		// set the projection transform
+		D3DXMATRIX matProjection;    // the projection transform matrix
+		D3DXMatrixPerspectiveFovLH(&matProjection,
+			D3DXToRadian(45),    // the horizontal field of view
+			dx_state1.aspect_ratio, // aspect ratio
+			1.0f,    // the near view-plane
+			100.0f);    // the far view-plane
+		device->SetTransform(D3DTS_PROJECTION, &matProjection);     // set the projection
+
+
+		// select the vertex buffer to display
+		device->SetStreamSource(0, v_buffer, 0, sizeof(CUSTOMVERTEX));
+		device->SetIndices(i_buffer);
+
+		D3DXMATRIX matWorld;
+		D3DXMATRIX matTranslateA;    // a matrix to store the translation for triangle A
+		D3DXMATRIX matRotateY;    // a matrix to store the rotation for each triangle
+		static float index = 0.0f; index += 0.05f; // an ever-increasing float value
+
+		D3DXMatrixIdentity(&matWorld);
+		// build MULTIPLE matrices to translate the model and one to rotate
+		D3DXMatrixTranslation(&matTranslateA, 5.0f, 0.0f, 0.0f);
+		D3DXMatrixRotationZ(&matRotateY, index);    // the front side
+
+		// tell Direct3D about each world transform, and then draw another triangle
+		device->SetTransform(D3DTS_WORLD, &(matWorld));
+		// draw the cube
+		device->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, 8, 0, 12);
+
+		device->EndScene();
+
+		device->Present(NULL, NULL, NULL, NULL);
+
+		return 0;
+	}
+};
+
+Demo *factory_cubetrianglestrip_create()
+{
+	return new CubeTriangleStrip();
+}
