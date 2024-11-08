@@ -135,10 +135,8 @@
     <CopyFileToFolders Include="3.Textures\tex_vertex.hlsl">
       <Filter>Source Files\Textures</Filter>
     </CopyFileToFolders>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="3.Textures\tex_ops.hlsl">
+    <CopyFileToFolders Include="3.Textures\tex_ops.hlsl">
       <Filter>Source Files\Textures</Filter>
-    </FxCompile>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>
