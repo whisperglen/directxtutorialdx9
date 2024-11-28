@@ -33,7 +33,7 @@ int create_window();
 void fill_in_d3dpresentparams(D3DPRESENT_PARAMETERS &d3dpp);
 
 // this function initializes and prepares Direct3D for use
-void initD3D(HWND, LPDIRECT3D9& d3d, LPDIRECT3DDEVICE9& device)
+int initD3D(HWND, LPDIRECT3D9& d3d, LPDIRECT3DDEVICE9& device)
 {
 	d3d = Direct3DCreate9(D3D_SDK_VERSION);    // create the Direct3D interface
 
@@ -128,7 +128,7 @@ void initD3D(HWND, LPDIRECT3D9& d3d, LPDIRECT3DDEVICE9& device)
 	if (ercd != 0)
 	{
 		std::cout << "failed to create window " << ercd << std::endl;
-		PostQuitMessage(2);
+		return -1;
 	}
 
 	D3DPRESENT_PARAMETERS d3dpp;
@@ -144,8 +144,10 @@ void initD3D(HWND, LPDIRECT3D9& d3d, LPDIRECT3DDEVICE9& device)
 	if (FAILED(hr))
 	{
 		std::cout << "failed to create device " << HRESULT_CODE(hr) << std::endl;
-		PostQuitMessage(1);
+		return -1;
 	}
+
+	return 0;
 }
 
 void fill_in_d3dpresentparams(D3DPRESENT_PARAMETERS &d3dpp)
@@ -294,7 +296,7 @@ int process_parameter_change(dx_state_change change)
 	if (FAILED(hr))
 	{
 		std::cout << "failed to reset device " << HRESULT_CODE(hr) << std::endl;
-		PostQuitMessage(3);
+		PostMessage(dx_state1.hwindow, WM_CLOSE, -1, 0);
 	}
 
 	if ( ! dx_state1.wvisible )
@@ -333,7 +335,10 @@ int main()
 
 	dx_state1.happ = (HINSTANCE)GetModuleHandle(NULL);// (HINSTANCE)GetCurrentProcess();
 
-	initD3D(NULL, dx_state1.d3d, dx_state1.device);
+	if (0 > initD3D(NULL, dx_state1.d3d, dx_state1.device))
+	{
+		return -1;
+	}
 
 	ShowWindow(dx_state1.hwindow, SW_SHOWNORMAL);
 	dx_state1.wvisible = true;
@@ -442,7 +447,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			{
 				if (dx_state1.windowed == false)
 					process_parameter_change(DXSTATE_FULLSCREEN);
-				PostQuitMessage(0);
+				PostMessage(hWnd, WM_CLOSE, -1, 0);
 				return 0;
 			}
 			if (wParam == VK_CONTROL)
@@ -555,6 +560,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			}
 		}
 		break;
+		case WM_ACTIVATE:
+			std::cout << "wm_activate " << wParam << std::endl;
+			break;
 	}
 
 	if (ctrl_pressed)

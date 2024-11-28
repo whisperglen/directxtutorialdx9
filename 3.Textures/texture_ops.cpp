@@ -261,10 +261,25 @@ public:
 			device->SetTexture(1, texture[1]);
 		}
 
-		//device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 		device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
+		//device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 		//device->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		device->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 0);
+
+		static int print_once = 1;
+		if (print_once)
+		{
+			print_once--;
+			DWORD tmp;
+			device->GetTextureStageState(0, D3DTSS_RESULTARG, &tmp);
+			printf("resultarg %d %d\n", tmp, D3DTA_CURRENT);
+			device->GetTextureStageState(0, D3DTSS_COLORARG1, &tmp);
+			printf("colorarg1 %d %d\n", tmp, D3DTA_TEXTURE);
+			device->GetTextureStageState(0, D3DTSS_COLORARG2, &tmp);
+			printf("colorarg2 %d %d\n", tmp, D3DTA_CURRENT);
+			device->GetSamplerState(0, D3DSAMP_BORDERCOLOR, &tmp);
+			printf("bordercolor %x\n", tmp);
+		}
 
 		device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 		device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);
@@ -352,7 +367,11 @@ public:
 
 		device->EndScene();    // ends the 3D scene
 
-		device->Present(NULL, NULL, NULL, NULL);    // displays the created frame
+		HRESULT hr = device->Present(NULL, NULL, NULL, NULL);    // displays the created frame
+		if (FAILED(hr))
+		{
+			//cout << "Present err: " << HRESULT_CODE(hr) << endl;
+		}
 
 		framecount++;
 
