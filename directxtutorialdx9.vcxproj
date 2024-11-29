@@ -172,6 +172,7 @@
     <ClCompile Include="1.Basics\_basics.cpp" />
     <ClCompile Include="2.Shaders\pass_shaders.cpp" />
     <ClCompile Include="2.Shaders\_shaders.cpp" />
+    <ClCompile Include="3.Textures\multiple_buffers.cpp" />
     <ClCompile Include="3.Textures\texture_ops.cpp" />
     <ClCompile Include="3.Textures\textured_triangle.cpp" />
     <ClCompile Include="3.Textures\_textures.cpp" />
@@ -281,6 +282,24 @@
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)3.textures</DestinationFolders>
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)3.textures</DestinationFolders>
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)3.textures</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)3.textures</DestinationFolders>
+    </CopyFileToFolders>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="3.Textures\flames1.jpg">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)3.textures</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)3.textures</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="3.Textures\flames2.jpg">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)3.textures</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)3.textures</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="3.Textures\flames3.jpg">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)3.textures</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)3.textures</DestinationFolders>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="3.Textures\flames4.jpg">
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)3.textures</DestinationFolders>
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)3.textures</DestinationFolders>
     </CopyFileToFolders>
   </ItemGroup>

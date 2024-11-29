@@ -3,6 +3,7 @@
 
 Demo *factory_textured_triangle_create();
 Demo *factory_texture_ops_create();
+Demo *factory_multibufpyramid_create();
 
 static void do_selection(Demo* &demo, int & selection)
 {
@@ -11,11 +12,13 @@ static void do_selection(Demo* &demo, int & selection)
 	case 0:
 		demo = factory_textured_triangle_create();
 		break;
-	default:
-		selection = 1;
 	case 1:
 		demo = factory_texture_ops_create();
 		break;
+	default:
+		selection = 2;
+	case 2:
+		demo = factory_multibufpyramid_create();
 
 	}
 }

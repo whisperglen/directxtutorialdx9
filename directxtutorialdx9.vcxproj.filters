@@ -81,6 +81,9 @@
     <ClCompile Include="3.Textures\texture_ops.cpp">
       <Filter>Source Files\Textures</Filter>
     </ClCompile>
+    <ClCompile Include="3.Textures\multiple_buffers.cpp">
+      <Filter>Source Files\Textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
@@ -138,5 +141,19 @@
     <CopyFileToFolders Include="3.Textures\tex_ops.hlsl">
       <Filter>Source Files\Textures</Filter>
     </CopyFileToFolders>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="3.Textures\flames1.jpg">
+      <Filter>Source Files\Textures</Filter>
+    </Image>
+    <Image Include="3.Textures\flames2.jpg">
+      <Filter>Source Files\Textures</Filter>
+    </Image>
+    <Image Include="3.Textures\flames3.jpg">
+      <Filter>Source Files\Textures</Filter>
+    </Image>
+    <Image Include="3.Textures\flames4.jpg">
+      <Filter>Source Files\Textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -407,11 +407,16 @@ class CubeTriangleStrip : public Demo
 {
 	LPDIRECT3DVERTEXBUFFER9 v_buffer;
 	LPDIRECT3DINDEXBUFFER9 i_buffer;
+	LPDIRECT3D9 _d3d;
+	LPDIRECT3DDEVICE9 _device;
 public:
 	CubeTriangleStrip() : Demo() {};
 
 	virtual int do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	{
+		_d3d = d3d;
+		_device = device;
+
 		CUSTOMVERTEX vertices[] =
 		{
 			{ -1.0f, 1.0f, -1.0f, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f) }, // 0 Front-bottom-left
@@ -534,6 +539,11 @@ public:
 		device->Present(NULL, NULL, NULL, NULL);
 
 		return 0;
+	}
+
+	virtual ~CubeTriangleStrip()
+	{
+		_device->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
 };
 
