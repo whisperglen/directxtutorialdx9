@@ -38,11 +38,16 @@ struct dx_state
 	bool wvisible;
 	WINDOWPLACEMENT wplacement;
 	D3DDISPLAYMODE desktop;
-	std::vector<D3DDISPLAYMODE> modes;
 	D3DFORMAT fmt_backbuffer;
 	D3DFORMAT fmt_depthstencil;
 	D3DADAPTER_IDENTIFIER9 adapter_info;
 	D3DCAPS9 caps;
+	std::vector<D3DDISPLAYMODE> modes;
+	dx_state() : d3d(NULL), device(NULL), happ(NULL), hwindow(NULL), width(0), height(0), aspect_ratio(0.0f),
+	  windowed(false), vsync(false), wvisible(false), wplacement(), desktop(), modes(), fmt_backbuffer(), fmt_depthstencil(),
+	  adapter_info(), caps()
+	{
+	};
 };
 
 extern struct dx_state dx_state1;
@@ -83,3 +88,9 @@ void store_keypress(union inputs val);
 union inputs get_keypress();
 
 int msg_func(const char *one, const char *two);
+
+
+template <class T>
+constexpr auto& tmpshim(T&& tmpobj) noexcept {
+	return tmpobj;
+}

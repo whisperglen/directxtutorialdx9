@@ -139,7 +139,7 @@ public:
 
 		struct timespec start;
 		timespec_get(&start, TIME_UTC);
-		float timeValue = start.tv_nsec / 100000000 + (start.tv_sec % 10) * 10;
+		float timeValue = (float)start.tv_nsec / 100000000 + (start.tv_sec % 10) * 10;
 		int texnum = int((sin(timeValue) * 1.5f) + 1.6f); //[0.1-3.1]
 		//printf("%g %d\n", timeValue, texnum);
 

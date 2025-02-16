@@ -141,19 +141,17 @@
     <CopyFileToFolders Include="3.Textures\tex_ops.hlsl">
       <Filter>Source Files\Textures</Filter>
     </CopyFileToFolders>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="3.Textures\flames1.jpg">
-      <Filter>Source Files\Textures</Filter>
-    </Image>
-    <Image Include="3.Textures\flames2.jpg">
-      <Filter>Source Files\Textures</Filter>
-    </Image>
-    <Image Include="3.Textures\flames3.jpg">
-      <Filter>Source Files\Textures</Filter>
-    </Image>
-    <Image Include="3.Textures\flames4.jpg">
-      <Filter>Source Files\Textures</Filter>
-    </Image>
+    <CopyFileToFolders Include="3.Textures\flames1.jpg">
+      <Filter>Resource Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="3.Textures\flames2.jpg">
+      <Filter>Resource Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="3.Textures\flames3.jpg">
+      <Filter>Resource Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="3.Textures\flames4.jpg">
+      <Filter>Resource Files</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>

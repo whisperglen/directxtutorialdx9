@@ -33,5 +33,5 @@ union inputs get_keypress()
 
 int msg_func(const char *one, const char *two)
 {
-	return strlen(one) + strlen(two);
+	return (int)(strlen(one) + strlen(two));
 }

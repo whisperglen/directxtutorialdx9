@@ -328,7 +328,8 @@ int main()
 
 	run_tests();
 
-	ZeroMemory(&dx_state1, sizeof(dx_state1));
+	//we have a ctor now, this also breaks std::vector
+	//ZeroMemory(&dx_state1, sizeof(dx_state1));
 
 	dx_state1.windowed = true;
 	dx_state1.vsync = true;
