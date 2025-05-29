@@ -13,26 +13,32 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Basics">
-      <UniqueIdentifier>{75b7fc01-dabb-4d8d-a06f-300f4ba9c786}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Basics">
-      <UniqueIdentifier>{999666d7-8e84-46e2-bac5-ad8876f8825e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\data">
       <UniqueIdentifier>{6fae7283-de05-4cdc-a150-9d0da570b004}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Shaders">
-      <UniqueIdentifier>{c11832e8-b335-463c-9f9f-fe22905fb766}</UniqueIdentifier>
+    <Filter Include="Header Files\1.Basics">
+      <UniqueIdentifier>{999666d7-8e84-46e2-bac5-ad8876f8825e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Shaders">
+    <Filter Include="Header Files\2.Shaders">
       <UniqueIdentifier>{c988be7e-d3a7-4940-9c26-b016fb658bd6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Textures">
+    <Filter Include="Header Files\4.Skins">
+      <UniqueIdentifier>{e96ca2a0-8800-416b-a066-6ada6eb4d4f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\3.Textures">
+      <UniqueIdentifier>{80a71a1c-b256-4c2b-a378-47c9b1685488}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\1.Basics">
+      <UniqueIdentifier>{75b7fc01-dabb-4d8d-a06f-300f4ba9c786}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\2.Shaders">
+      <UniqueIdentifier>{c11832e8-b335-463c-9f9f-fe22905fb766}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\3.Textures">
       <UniqueIdentifier>{c11a0a71-fd2b-4080-bc8f-89ef1f2b49e2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Textures">
-      <UniqueIdentifier>{80a71a1c-b256-4c2b-a378-47c9b1685488}</UniqueIdentifier>
+    <Filter Include="Source Files\4.Skins">
+      <UniqueIdentifier>{94c19421-bef2-4bab-a3dc-63c7fcc14dd1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -43,68 +49,83 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="1.Basics\_basics.cpp">
-      <Filter>Source Files\Basics</Filter>
+      <Filter>Source Files\1.Basics</Filter>
     </ClCompile>
     <ClCompile Include="1.Basics\triangle.cpp">
-      <Filter>Source Files\Basics</Filter>
+      <Filter>Source Files\1.Basics</Filter>
     </ClCompile>
     <ClCompile Include="1.Basics\triangle3d.cpp">
-      <Filter>Source Files\Basics</Filter>
+      <Filter>Source Files\1.Basics</Filter>
     </ClCompile>
     <ClCompile Include="1.Basics\pyramid.cpp">
-      <Filter>Source Files\Basics</Filter>
+      <Filter>Source Files\1.Basics</Filter>
     </ClCompile>
     <ClCompile Include="helper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="1.Basics\vertexlight.cpp">
-      <Filter>Source Files\Basics</Filter>
+      <Filter>Source Files\1.Basics</Filter>
     </ClCompile>
     <ClCompile Include="mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="1.Basics\blending.cpp">
-      <Filter>Source Files\Basics</Filter>
+      <Filter>Source Files\1.Basics</Filter>
     </ClCompile>
     <ClCompile Include="2.Shaders\_shaders.cpp">
-      <Filter>Source Files\Shaders</Filter>
+      <Filter>Source Files\2.Shaders</Filter>
     </ClCompile>
     <ClCompile Include="2.Shaders\pass_shaders.cpp">
-      <Filter>Source Files\Shaders</Filter>
+      <Filter>Source Files\2.Shaders</Filter>
     </ClCompile>
     <ClCompile Include="3.Textures\_textures.cpp">
-      <Filter>Source Files\Textures</Filter>
+      <Filter>Source Files\3.Textures</Filter>
     </ClCompile>
     <ClCompile Include="3.Textures\textured_triangle.cpp">
-      <Filter>Source Files\Textures</Filter>
+      <Filter>Source Files\3.Textures</Filter>
     </ClCompile>
     <ClCompile Include="3.Textures\texture_ops.cpp">
-      <Filter>Source Files\Textures</Filter>
+      <Filter>Source Files\3.Textures</Filter>
     </ClCompile>
     <ClCompile Include="3.Textures\multiple_buffers.cpp">
-      <Filter>Source Files\Textures</Filter>
+      <Filter>Source Files\3.Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="4.Skins\_skins.cpp">
+      <Filter>Source Files\4.Skins</Filter>
+    </ClCompile>
+    <ClCompile Include="4.Skins\simplebone.cpp">
+      <Filter>Source Files\4.Skins</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="data\simplebone.mtl">
+      <Filter>Resource Files\data</Filter>
+    </None>
+    <None Include="data\simplebone.obj">
+      <Filter>Resource Files\data</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="1.Basics\basics.h">
-      <Filter>Header Files\Basics</Filter>
+      <Filter>Header Files\1.Basics</Filter>
     </ClInclude>
     <ClInclude Include="helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="2.Shaders\shaders.h">
-      <Filter>Header Files\Shaders</Filter>
+      <Filter>Header Files\2.Shaders</Filter>
     </ClInclude>
     <ClInclude Include="DemoClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="3.Textures\textures.h">
-      <Filter>Header Files\Textures</Filter>
+      <Filter>Header Files\3.Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="4.Skins\skins.h">
+      <Filter>Header Files\4.Skins</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -121,25 +142,25 @@
       <Filter>Resource Files\data</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="2.Shaders\pass_pixel.hlsl">
-      <Filter>Source Files\Shaders</Filter>
+      <Filter>Source Files\2.Shaders</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="2.Shaders\pass_vertex.hlsl">
-      <Filter>Source Files\Shaders</Filter>
+      <Filter>Source Files\2.Shaders</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="3.Textures\tex_pixel.hlsl">
-      <Filter>Source Files\Textures</Filter>
+      <Filter>Source Files\3.Textures</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="3.Textures\castle_walls_short.jpg">
-      <Filter>Source Files\Textures</Filter>
+      <Filter>Source Files\3.Textures</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="3.Textures\painting-21.jpg">
-      <Filter>Source Files\Textures</Filter>
+      <Filter>Source Files\3.Textures</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="3.Textures\tex_vertex.hlsl">
-      <Filter>Source Files\Textures</Filter>
+      <Filter>Source Files\3.Textures</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="3.Textures\tex_ops.hlsl">
-      <Filter>Source Files\Textures</Filter>
+      <Filter>Source Files\3.Textures</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="3.Textures\flames1.jpg">
       <Filter>Resource Files</Filter>

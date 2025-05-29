@@ -277,6 +277,10 @@ public:
 			printf("colorarg1 %d %d\n", tmp, D3DTA_TEXTURE);
 			device->GetTextureStageState(0, D3DTSS_COLORARG2, &tmp);
 			printf("colorarg2 %d %d\n", tmp, D3DTA_CURRENT);
+			device->GetTextureStageState(0, D3DTSS_ALPHAARG1, &tmp);
+			printf("alphaarg1 %d %d\n", tmp, D3DTA_TEXTURE);
+			device->GetTextureStageState(0, D3DTSS_ALPHAARG2, &tmp);
+			printf("alphaarg2 %d %d\n", tmp, D3DTA_CURRENT);
 			device->GetSamplerState(0, D3DSAMP_BORDERCOLOR, &tmp);
 			printf("bordercolor %x\n", tmp);
 		}

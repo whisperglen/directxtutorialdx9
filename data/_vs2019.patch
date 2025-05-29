@@ -1,0 +1,42 @@
+diff --git a/directxtutorialdx9.vcxproj b/directxtutorialdx9.vcxproj
+index 48ce348..88d54ae 100644
+--- a/directxtutorialdx9.vcxproj
++++ b/directxtutorialdx9.vcxproj
+@@ -23,32 +23,32 @@
+     <ProjectGuid>{2AD933CB-DEF8-47C3-84F7-F80C29834B27}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>directxtutorialdx9</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v141</PlatformToolset>
++    <PlatformToolset>v142</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v141</PlatformToolset>
++    <PlatformToolset>v142</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v141</PlatformToolset>
++    <PlatformToolset>v142</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v141</PlatformToolset>
++    <PlatformToolset>v142</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>

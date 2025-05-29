@@ -25,6 +25,7 @@ extern int run_tests();
 extern int call_loop_unit1(int& selection, LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device);
 extern int call_loop_unit2(int& selection, LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device);
 extern int call_loop_unit3(int& selection, LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device);
+extern int call_loop_unit4( int& selection, LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device );
 
 static int selection = INT_MAX;
 static int active_unit = INT_MAX;
@@ -409,9 +410,12 @@ int main()
 		case 2:
 			unit_res = call_loop_unit2(selection, dx_state1.d3d, dx_state1.device);
 			break;
-		default:
 		case 3:
 			unit_res = call_loop_unit3(selection, dx_state1.d3d, dx_state1.device);
+			break;
+		default:
+		case 4:
+			unit_res = call_loop_unit4(selection, dx_state1.d3d, dx_state1.device);
 			break;
 		}
 			

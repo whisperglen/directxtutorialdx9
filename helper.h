@@ -65,6 +65,9 @@ struct mesh_obj
 };
 
 int load_mesh(const char *file, const char *name, LPDIRECT3DDEVICE9 device, struct mesh_obj &out);
+int load_mesh_ex( const char* file, const char* name,
+	void (*vertex)(float, float, float, void *), void(*normal)(float, float, float, void *), void(*indices)(UINT,UINT,UINT,void *),
+	struct mesh_obj &out, void *custom );
 
 /**
  * A hacky way to store keypresses
