@@ -514,6 +514,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			{
 				pressed.p = 1;
 			}
+			if (wParam == 'B')
+			{
+				pressed.b = 1;
+			}
 		break;
 		// this message is read when the window is closed
 		case WM_DESTROY:

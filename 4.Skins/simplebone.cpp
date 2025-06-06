@@ -1,29 +1,39 @@
 #include "skins.h"
 
-struct CUSTOMVERTEX
-{
-	FLOAT X, Y, Z;
-	//FLOAT weights[3];
-	//DWORD matind;
-	DWORD COLOR;
-};
-//#define CUSTOMFVF (D3DFVF_XYZB4 | D3DFVF_LASTBETA_UBYTE4 | D3DFVF_DIFFUSE)
-#define CUSTOMFVF (D3DFVF_XYZ | D3DFVF_DIFFUSE)
-
 #define STEP_VERTEX 1 << 0
 #define STEP_NORMAL 1 << 1
 #define STEP_ALL (STEP_VERTEX | STEP_NORMAL )
 
-#define MAX_VERTEXES 250
-#define MAX_INDEXES (6*MAX_VERTEXES)
-
 class SimpleBone: public Demo
 {
+
+	struct CUSTOMVERTEX
+	{
+		FLOAT X, Y, Z;
+		FLOAT weights[1];
+		union {
+			DWORD matind;
+			BYTE matindb[4];
+		};
+		DWORD COLOR;
+	};
+	static const UINT CUSTOMFVF = ( D3DFVF_XYZB2 | D3DFVF_LASTBETA_UBYTE4 | D3DFVF_DIFFUSE );
+	//static const UINT CUSTOMFVF = (D3DFVF_XYZ | D3DFVF_DIFFUSE);
+
+	static const UINT BONEOFFSET = 3;
+
+	static const UINT NUM_OBJECTS = 5;
+	static const UINT MAX_VERTEXES = 250;
+	static const UINT MAX_INDEXES = (6*MAX_VERTEXES);
+
 	LPDIRECT3DVERTEXBUFFER9 v_buffer;
 	LPDIRECT3DINDEXBUFFER9 i_buffer;
 	struct CUSTOMVERTEX *pVert;
 	short *pInd;
-	struct mesh_obj objects[6];
+	struct mesh_obj objects[NUM_OBJECTS];
+	const float center[NUM_OBJECTS] = { 100, 204, 212, 220, 324};
+	const float offset[NUM_OBJECTS] = { 0, 200, 208, 216, 224};
+	D3DXMATRIX bones[2];
 	int objnum;
 	int numsteps;
 	int step;
@@ -38,7 +48,9 @@ class SimpleBone: public Demo
 	friend void recv_prim_indices( UINT i0, UINT i1, UINT i2, void *custom );
 
 public:
-	SimpleBone() : Demo(), pVert(0), pInd(0), objects(), objnum(0), numsteps(0), step(0), total_vertexes(0), total_indexes(0) {}
+	SimpleBone() : Demo(), v_buffer(0), i_buffer(0), pVert(0), pInd(0),
+		objects(), bones(), objnum(0), numsteps(0), step(0), total_vertexes(0), total_indexes(0),
+		_d3d(0), _device(0) {}
 
 	virtual int do_init(LPDIRECT3D9 d3d, LPDIRECT3DDEVICE9 device)
 	{
@@ -79,10 +91,15 @@ public:
 		v_buffer->Unlock();
 		i_buffer->Unlock();
 
+		D3DXMatrixIdentity( &bones[0] );
+		D3DXMatrixIdentity( &bones[1] );
+
 		device->SetRenderState(D3DRS_LIGHTING, FALSE);    // turn off the 3D lighting
 		device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 		device->SetRenderState(D3DRS_ZENABLE, TRUE);    // turn on the z-buffer
 		device->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+		device->SetRenderState( D3DRS_VERTEXBLEND, D3DVBF_1WEIGHTS );
+		device->SetRenderState( D3DRS_INDEXEDVERTEXBLENDENABLE, TRUE );
 
 		_d3d = d3d;
 		_device = device;
@@ -107,46 +124,63 @@ public:
 				exit( -1 );
 			}
 
+			pVert->matind = 0;
+
 			DWORD bonenum = 0;
 			FLOAT boneweight = 0;
+			DWORD boneidxs = 0;
 
+			float centerval = center[objnum];
+
+			//bonenum 0
+			bonenum = 0;
 			switch ( objnum )
 			{
 			case 0:
 				boneweight = 1.0;
-				bonenum = 1;
 				break;
 			case 1:
-				boneweight = 0.5;
-				bonenum = 1;
+				if ( pVert->X < centerval )
+					boneweight = 1.0;
+				else
+					boneweight = 0.66f;
 				break;
 			case 2:
-				boneweight = 0.25;
-				bonenum = 1;
+				if ( pVert->X < centerval )
+					boneweight = 0.66f;
+				else
+					boneweight = 0.33f;
 				break;
-
 			case 3:
-				boneweight = 0.25;
-				bonenum = 2;
+				if ( pVert->X < centerval )
+					boneweight = 0.33f;
+				else
+					boneweight = 0.0;
 				break;
 			case 4:
-				boneweight = 0.5;
-				bonenum = 2;
-				break;
-			case 5:
-				boneweight = 1.0;
-				bonenum = 2;
+				boneweight = 0.0;
 				break;
 			}
+			pVert->weights[bonenum] = boneweight;
+			boneidxs |= bonenum << (8 * bonenum);
+			pVert->matindb[bonenum] = bonenum + BONEOFFSET;
+
+			//bonenum 1
+			bonenum = 1;
+			switch ( objnum )
+			{
+			case 0:
+			case 1:
+			case 2:
+				break;
+			}
+			//pVert->weights[bonenum] = boneweight;
+			boneidxs |= bonenum << (8 * bonenum);
+			pVert->matindb[bonenum] = bonenum + BONEOFFSET;
+
+			//pVert->matind = boneidxs;
 
 			D3DMATERIAL9& mat = objects[objnum].material;
-			DWORD boneidxs = 0;
-			/*for ( int i = 0; i < ARRAYSIZE( pVert->weights ); i++ )
-			{
-				pVert->weights[i] = boneweight;
-				boneidxs |= bonenum << (8 * (3 - i));
-			}
-			pVert->matind = boneidxs;*/
 			pVert->COLOR = D3DCOLOR_COLORVALUE( mat.Diffuse.r, mat.Diffuse.g, mat.Diffuse.b, mat.Diffuse.a );
 
 			pVert++;
@@ -160,10 +194,22 @@ public:
 			if (0 != do_init(d3d, device))
 				return -1;
 
-		device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0x33, 0x4d, 0x4d), 1.0f, 0);
-		device->Clear(0, NULL, D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
+		device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0x33, 0x4d, 0x4d), 1.0f, 0);
 
 		union inputs key = get_keypress();
+
+#define BONEMODS 3
+		static int bonemod = 0;
+		if ( key.b )
+		{
+			bonemod++;
+			if ( bonemod >= BONEMODS )
+			{
+				bonemod = 0;
+			}
+
+			std::cout << "bonemod: " << bonemod << std::endl;
+		}
 
 		static float scaling = 0.1f;
 		if (key.vert && key.ctrl)
@@ -172,39 +218,52 @@ public:
 		}
 
 
-		static float rotx = 0.f, roty = 0.f, rotz = 0.f;
+		static float rotx[BONEMODS] = { 0 }, roty[BONEMODS] = { 0 }, rotz[BONEMODS] = { 0 };
 		if (key.horiz && !key.ctrl)
 		{
-			roty += 0.2f * -key.horiz;
+			roty[bonemod] += 0.2f * -key.horiz;
 		}
 		if (key.horiz && key.ctrl)
 		{
-			rotz += 0.2f * key.horiz;
+			rotz[bonemod] += 0.2f * key.horiz;
 		}
 		if (key.vert && !key.ctrl)
 		{
-			rotx += 0.2f * key.vert;
+			rotx[bonemod] += 0.2f * key.vert;
 		}
 
-		device->BeginScene();    // begins the 3D scene
+		device->BeginScene();
 
-								 // select which vertex format we are using
 		device->SetFVF(CUSTOMFVF);
 
+		D3DXMATRIX rotate;
 		D3DXMATRIX camRotate;
 		D3DXMATRIX scratch;
-		D3DXMatrixRotationX(&camRotate, rotx);
-		camRotate *= *D3DXMatrixRotationY(&scratch, roty);
-		camRotate *= *D3DXMatrixRotationZ(&scratch, rotz);
-		D3DXVECTOR3 camerapos, cameraup;
+		D3DXMatrixRotationX( &rotate, rotx[bonemod] );
+		rotate *= *D3DXMatrixRotationY( &scratch, roty[bonemod] );
+		rotate *= *D3DXMatrixRotationZ( &scratch, rotz[bonemod] );
 
-		D3DXVec3TransformCoord(&camerapos, &D3DXVECTOR3(0.0f, 20.0f, -50.0f), &camRotate);
-		D3DXVec3TransformCoord(&cameraup, &D3DXVECTOR3(0.0f, 1.0f, 0.0f), &camRotate);
+		D3DXMatrixRotationX( &camRotate, rotx[0] );
+		camRotate *= *D3DXMatrixRotationY( &scratch, roty[0] );
+		camRotate *= *D3DXMatrixRotationZ( &scratch, rotz[0] );
+
+		if ( bonemod == 1 )
+		{
+			bones[0] = rotate;
+		}
+		if ( bonemod == 2 )
+		{
+			bones[1] = rotate;
+		}
+		D3DXVECTOR3 camerapos, cameraup;
+		D3DXVec3TransformCoord(&camerapos, &D3DXVECTOR3(20.0f, 20.0f, -50.0f), &camRotate);
+		D3DXVec3TransformCoord(&cameraup, &D3DXVECTOR3(0.0f, 1.0f, 0.0f), &scratch);
+
 		// set the view transform
 		D3DXMATRIX matView;
 		D3DXMatrixLookAtLH(&matView,
 			&camerapos,    // the camera position
-			&D3DXVECTOR3(0.0f, 0.0f, 0.0f),      // the look-at position
+			&D3DXVECTOR3(20.0f, 0.0f, 0.0f),      // the look-at position
 			&cameraup);    // the up direction
 		device->SetTransform(D3DTS_VIEW, &matView);
 
@@ -221,7 +280,7 @@ public:
 		// set the world transform
 		D3DXMATRIX matRotate;
 		D3DXMATRIX matScale;
-		D3DXMATRIX matScratch;
+		D3DXMATRIX matWorld;
 		D3DXMatrixIdentity(&matRotate); D3DXMatrixIdentity(&matScale);
 		//D3DXMatrixRotationX(&matRotate, D3DXToRadian(-90));
 		//D3DXMatrixRotationY(&matScratch, rotate);
@@ -233,8 +292,12 @@ public:
 		device->SetIndices( i_buffer );
 
 		D3DXMATRIX matTranslate;
-		D3DXMatrixTranslation(&matTranslate, 0.0f, 0.0f, 00.0f);
-		device->SetTransform(D3DTS_WORLD, &(matTranslate * matScale));    // set the world transform
+		D3DXMatrixTranslation(&matTranslate, -50.0f, 0.0f, 00.0f);
+		matWorld = matTranslate * matScale;
+		//device->SetTransform(D3DTS_WORLD, &matWorld);    // set the world transform
+
+		device->SetTransform( D3DTS_WORLDMATRIX(0 + BONEOFFSET), &(matWorld * bones[0]) );
+		device->SetTransform( D3DTS_WORLDMATRIX(1 + BONEOFFSET), &(matWorld * bones[1]) );
 
 		int indexpos = 0;
 		int vertexpos = 0;
@@ -256,6 +319,7 @@ public:
 	{
 		if (init_done)
 		{
+			_device->SetRenderState( D3DRS_VERTEXBLEND, D3DVBF_DISABLE);
 		}
 	}
 };
@@ -282,7 +346,7 @@ void recv_prim_indices( UINT i0, UINT i1, UINT i2, void* custom )
 {
 	SimpleBone* sb = (SimpleBone*)custom;
 
-	if ( sb->total_indexes >= MAX_INDEXES )
+	if ( sb->total_indexes >= SimpleBone::MAX_INDEXES )
 	{
 		std::cout << "max indexes reached! objectnum: " << sb->objnum << std::endl;
 		system("pause");

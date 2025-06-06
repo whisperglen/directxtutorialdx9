@@ -79,10 +79,11 @@ union inputs
 		int vert : 2;
 		int ctrl : 1;
 		int shift : 1;
-		uint t : 1;
-		uint f : 1;
-		uint v : 1;
-		uint p : 1;
+		uint t : 1; //light enable
+		uint f : 1; //fullscreen
+		uint v : 1; //vsync
+		uint p : 1; //texture filter type
+		uint b : 1; //bones sel
 	};
 	uint all;
 };
